@@ -220,6 +220,27 @@ button.chip.sel { background: var(--secondary-container); box-shadow: none; }
 .tile:active { transform: scale(.96); }
 .tile .avatar { width: 56px; height: 56px; }
 
+.productos-operacion { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 8px; max-height: 240px; overflow-y: auto; }
+.producto-operacion { position: relative; display: flex; flex-direction: column; gap: 5px; text-align: left; padding: 14px 42px 14px 14px; border-radius: var(--r-md); background: var(--sc-low); }
+.producto-operacion:not(:disabled):hover { background: var(--primary-container); }
+.producto-operacion small { color: var(--on-surface-variant); }
+.producto-operacion .icon { position: absolute; right: 12px; top: 16px; }
+.tabla-scroll { overflow-x: auto; max-width: 100%; }
+.tabla-operaciones { border-collapse: collapse; width: 100%; text-align: left; }
+.tabla-operaciones th, .tabla-operaciones td { padding: 12px; border-bottom: 1px solid var(--outline-variant); vertical-align: middle; }
+.tabla-operaciones small { display: block; margin-top: 4px; }
+.cantidad-operacion { width: 90px; max-width: 100%; padding: 10px; background: var(--sc-lowest); border: 1px solid var(--outline); border-radius: var(--r-sm); color: inherit; }
+.comprobante p, .comprobante h3 { margin: 0; }
+@media print {
+  body { background: white; color: black; }
+  #app, body > .fab { display: none !important; }
+  .scrim { position: static; padding: 0; background: none; display: block; }
+  .scrim:not(:has(.comprobante)) { display: none; }
+  .dialog, .dialog.lg { width: 100%; max-height: none; border-radius: 0; box-shadow: none; background: white; color: black; }
+  .dialog header, .dialog footer { display: none; }
+  .dialog .body, .tabla-scroll { overflow: visible; padding: 0; }
+  .tabla-operaciones th, .tabla-operaciones td { border-color: #ccc; }
+}
 .pos { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(340px, 1fr); gap: 16px; align-items: start; }
 .pos .detalle { position: sticky; top: 84px; }
 @media (max-width: 999px) { .pos { grid-template-columns: 1fr; } .pos .detalle { position: static; } }

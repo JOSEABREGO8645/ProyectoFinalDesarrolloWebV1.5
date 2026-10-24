@@ -7,9 +7,10 @@ MongoDB (Docker) · Laravel + mongodb/laravel-mongodb · Vue 3 + Vite + Axios.
 backend/ (API) · frontend/ (interfaz) · database/ (scripts y diccionario de datos) · docker/ (configuración de contenedores) · docs/ (diagramas, manuales, evidencias)
 
 ## Ejecución local
-1. docker compose up -d
-2. Terminal 1: cd backend, luego php artisan serve
-3. Terminal 2: cd frontend, luego npm run dev
+1. `docker compose up -d --wait` (MongoDB local como replica set de un nodo rs0).
+2. Desde backend/, preparar los índices: `php artisan migrate --database=mongodb --path=database/migrations/2026_10_23_232450_crear_indices_inventario.php`.
+3. Terminal 1: cd backend, luego php artisan serve.
+4. Terminal 2: cd frontend, luego npm run dev (npm.cmd en PowerShell si npm.ps1 está bloqueado).
 
 ## Configuración
 
@@ -25,7 +26,9 @@ El usuario inicial es admin y su contraseña aleatoria se guarda en backend/stor
 
 ## Avance funcional
 
-Sucursales, Proveedores, Clientes, Catálogo y Usuarios cuentan con formularios, búsqueda, edición y eliminación. Login JWT y permisos ya protegen la API y la navegación. El superusuario dispone de todos los módulos; un empleado tiene acceso completo solo a los módulos asignados. Usuarios es exclusivo del superusuario. El empleado consulta existencias de su sucursal; el superusuario puede consultar totales o elegir una sucursal. Los procesos que modifican inventario corresponden a la fase 10.
+Sucursales, Proveedores, Clientes, Catálogo y Usuarios cuentan con formularios, búsqueda, edición y eliminación. Login JWT y permisos protegen la API y la navegación. El superusuario dispone de todos los módulos; un empleado opera en los módulos asignados y su sucursal. Usuarios es exclusivo del superusuario. El empleado consulta existencias de su sucursal; el superusuario puede consultar totales o elegir una sucursal.
+
+La fase 10 incorpora Ingresos por proveedor, Ventas con efectivo/cambio y Traslados con envío/recepción, comprobantes imprimibles y kardex. Documento, correlativo, existencias y movimientos se confirman en una transacción MongoDB. El código de facturación se valida al guardar cada venta; configúrelo en Usuarios antes de vender. Solo el superusuario anula ingresos y ventas; los traslados pendientes se anulan en origen y se confirman en destino. Consulte [Inventario](docs/INVENTARIO.md) para contratos, permisos y reintentos.
 
 El access token dura 15 minutos y permanece en memoria. El refresh token rota en una cookie HttpOnly, SameSite=Lax (Secure en producción), con vencimiento absoluto de 7 días. La interfaz recupera la sesión al recargar, comparte una renovación entre solicitudes simultáneas y revoca la sesión al salir. Los POST de sesión requieren X-Requested-With: XMLHttpRequest y un origen permitido cuando el cliente envía Origin.
 
@@ -33,8 +36,8 @@ El access token dura 15 minutos y permanece en memoria. El refresh token rota en
 
 - Backend: desde backend/, ejecutar `php artisan test --compact`. Los catálogos requieren MongoDB local disponible y usan bases aleatorias aisladas; no modifican la base del proyecto. No se ejecutan migraciones relacionales.
 - Frontend: desde frontend/, ejecutar `npm run build`.
-- Postman: importar docs/postman/auth.postman_collection.json y catalogos.postman_collection.json. Configurar base_url, usuario y password de un superusuario de pruebas; la colección de auth también requiere password_empleado. Incluyen login/logout, renovaciones, revocación, rechazos sin permiso y datos inválidos. Crean datos ficticios y eliminan sus registros propios. Usar una base aislada, pues las pruebas de seguridad revocan deliberadamente sus sesiones.
-- Navegador: los scripts de frontend/tests/ utilizan CDP de Edge/Chrome sin dependencias adicionales del frontend. Iniciar un perfil exclusivo con --headless=new, --remote-debugging-port=9222 y --user-data-dir apuntando a frontend/test-results/edge-profile. Desde frontend/, ejecutar `python tests/run-browser.py`: prepara una BD y caché temporales, inicia backend en 8002 y frontend en 5175, prueba autenticación/Usuarios y catálogos, detiene los servidores y elimina únicamente su BD de pruebas. MongoDB debe estar disponible. Las capturas y logs quedan en frontend/test-results/ (ignorado).
+- Postman: importar las tres colecciones de docs/postman/ (auth, catalogos e inventario). Configurar base_url, usuario y password de un superusuario de pruebas; auth e inventario requieren password_empleado, e inventario también su codigo de facturación. Cubren casos válidos, inválidos, sin permiso, sin sesión e IDs inexistentes. Usar una base aislada: las pruebas de seguridad revocan sesiones y el inventario conserva sus documentos y movimientos como historial.
+- Navegador: los scripts de frontend/tests/ utilizan CDP de Edge/Chrome sin dependencias adicionales del frontend. Iniciar un perfil exclusivo con --headless=new, --remote-debugging-port=9222 y --user-data-dir apuntando a frontend/test-results/edge-profile. Desde frontend/, ejecutar `python tests/run-browser.py`: prepara BD/caché temporales, inicia backend en 8002 y frontend en 5175, prueba autenticación/Usuarios, catálogos e inventario, detiene sus servidores y elimina únicamente su BD de pruebas. MongoDB debe estar disponible. Capturas y logs quedan en frontend/test-results/ (ignorado).
 - Newman: el mismo ejecutor acepta `python tests/run-browser.py auth.postman_collection.json catalogos.postman_collection.json`. Requiere Newman en frontend/node_modules/.cache/newman; puede prepararse desde la raíz con `npm exec --cache ./frontend/node_modules/.cache/newman --yes --package=newman -- newman --version`. Esta herramienta de pruebas no modifica las dependencias del frontend.
 
 El README de publicación y los manuales completos se terminan en la Fase 15. MEMORY.md distingue los resultados comprobados de los pendientes.

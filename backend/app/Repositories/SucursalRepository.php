@@ -89,6 +89,8 @@ class SucursalRepository
             ['usuarios', 'sucursal_id'],
             ['existencias', 'sucursal_id'],
             ['ventas', 'sucursal_id'],
+            ['ingresos', 'sucursal_id'],
+            ['movimientos', 'sucursal_id'],
             ['traslados', 'origen_id'],
             ['traslados', 'destino_id'],
         ];

@@ -1,0 +1,62 @@
+# Ingresos, ventas, traslados y kardex
+
+## Preparación local
+
+`docker compose up -d --wait` conserva el volumen mongodb_libreria_data y arranca MongoDB en el puerto 27018, como replica set rs0. El keyfile se genera dentro del volumen de configuración; no se guarda en el repositorio. El nodo anuncia localhost:27018, válido para el backend ejecutado en Windows y para el propio contenedor. Esta configuración de un nodo sirve para el desarrollo local; la publicación se configura en su fase correspondiente.
+
+Desde backend/, ejecutar:
+
+```powershell
+php artisan migrate --database=mongodb --path=database/migrations/2026_10_23_232450_crear_indices_inventario.php
+php artisan route:list --path=api
+```
+
+No ejecutar las migraciones relacionales predeterminadas para preparar inventario. Las escrituras se rechazan con 503 si falta la preparación del esquema. InventarioService rechaza movimientos fuera de una transacción. La conversión local se hizo conservando el volumen y un respaldo privado previo; nunca requiere eliminar volúmenes.
+
+Referencias: [transacciones en Laravel MongoDB](https://www.mongodb.com/docs/drivers/php/laravel-mongodb/current/interact-data/transactions/) y [conversión de standalone a replica set](https://www.mongodb.com/docs/v8.0/tutorial/convert-standalone-to-replica-set/).
+
+## Operación y permisos
+
+| Proceso | Efecto | Anulación |
+| --- | --- | --- |
+| Ingreso | Suma en sucursal, exige proveedor activo y productos de ese proveedor | Superusuario; resta en la sucursal original y exige stock suficiente |
+| Venta | Resta en sucursal, valida PIN propio, efectivo y precios del servidor | Superusuario; devuelve las unidades originales |
+| Traslado enviado | Resta en origen, deja unidades en tránsito | Superusuario u origen; devuelve las unidades si aún está enviado |
+| Traslado confirmado | Suma en destino una vez | No admite anulación ni segunda recepción |
+
+El empleado solo registra en su sucursal. Puede leer traslados donde su sucursal sea origen o destino; solo el destino confirma. Cada endpoint exige su módulo, aunque la interfaz o el cliente HTTP soliciten otro. Los selectores de productos/clientes/destinos tienen permisos independientes de los CRUD: vender no requiere permiso para administrar el catálogo o los clientes. El selector de ventas no entrega costos si no se dispone de ingresos.
+
+Los importes documentales se calculan con centavos enteros, hasta Q 99,999,999.99. El ingreso utiliza el costo vigente del catálogo y la venta el precio de venta vigente. Cada detalle admite hasta 100 productos distintos, con cantidades enteras entre 1 y 100000. No se aceptan precios en las líneas ni productos repetidos. Se conservan códigos de barras como texto.
+
+## API
+
+Para cada prefijo `/api/ingresos`, `/api/ventas` y `/api/traslados`:
+
+- GET raíz: hasta 200 documentos recientes, con filtros sucursal_id y estado.
+- GET /{id}: documento y detalle; una referencia de otra sucursal se oculta con 404.
+- POST raíz: registra documento y kardex; responde 201.
+- POST /{id}/anular: requiere motivo de 3 a 300 caracteres; responde 200 o 409 si el estado ya no permite anular.
+
+POST /api/traslados/{id}/confirmar requiere motivo como observación de recepción. GET /api/inventario/movimientos filtra por sucursal_id/producto_id y devuelve hasta 200 movimientos recientes. Cada movimiento incluye cantidad con signo, antes, despues, documento/numero, motivo y responsable.
+
+Todos los POST de registro requieren operacion_id (UUID), items (producto_id y cantidad) y sucursal_id opcional, que por defecto es la asignada al usuario. Ingresos añade proveedor_id y motivo; traslados añade destino_id y motivo; ventas añade codigo (string de cuatro dígitos), efectivo con hasta dos decimales y cliente_id opcional (sin cliente, Consumidor Final/CF).
+
+## Atomicidad y reintentos
+
+El documento, su número, todas las existencias y todos los movimientos se guardan en una única transacción. Si una línea no alcanza o falla el kardex, se revierte todo. Los conflictos transitorios y las colisiones de primera creación se reintentan de forma completa; la actualización condicional de estado impide confirmar/anular dos veces. Los índices únicos impiden duplicar saldos o identificadores.
+
+Repetir un registro debe utilizar el mismo operacion_id y los mismos datos: se devuelve el documento ya registrado sin volver a aplicar movimientos, incluso si cambió después el precio del catálogo. Otro contenido o usuario con esa clave obtiene 409. La interfaz conserva la solicitud mientras reintenta tras un error de red/servidor y bloquea su edición si la respuesta es incierta; también permite revisar el historial. El PIN solo permanece en memoria del formulario y se vuelve a validar en el servidor. No cambie la clave para reintentar una respuesta perdida.
+
+El límite del código es de cinco solicitudes por usuario/IP por minuto. Autenticación y permisos se ejecutan antes del limitador; la actividad de otro cajero no consume su cupo.
+
+## Verificación
+
+La suite del backend cubre entradas/salidas, rollback por stock insuficiente y fallo del kardex, totales/cambio, permisos, referencias inexistentes, anulaciones y procesos PHP simultáneos contra una BD MongoDB temporal. Edge/CDP verifica los formularios, dos sucursales, comprobantes, móvil y la pérdida real de la respuesta HTTP después de confirmar un ingreso. Las tres colecciones Postman se ejecutan con Newman en la misma infraestructura temporal, sin escribir datos de prueba en la BD local del usuario.
+
+Para ejecutar todo (con el navegador CDP ya abierto), desde frontend/:
+
+```powershell
+python tests/run-browser.py auth.browser.mjs catalogos.browser.mjs operaciones.browser.mjs auth.postman_collection.json catalogos.postman_collection.json inventario.postman_collection.json
+```
+
+Los datos y evidencias temporales quedan en test-results/ (ignorado); el ejecutor detiene sus propios servidores y elimina exclusivamente la BD temporal. MEMORY.md registra los resultados efectivamente obtenidos.

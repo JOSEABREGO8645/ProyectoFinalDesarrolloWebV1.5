@@ -6,6 +6,9 @@ import ClientesView from './views/ClientesView.vue'
 import CatalogoView from './views/CatalogoView.vue'
 import LoginView from './views/LoginView.vue'
 import UsuariosView from './views/UsuariosView.vue'
+import IngresosView from './views/IngresosView.vue'
+import VentasView from './views/VentasView.vue'
+import TrasladosView from './views/TrasladosView.vue'
 import { session, inicializarSesion, cerrarSesion, puede } from './stores/session'
 import { mensajeError } from './services/api'
 import { MODULOS } from './config/modulos'
@@ -13,7 +16,7 @@ import ToastHost from './components/comunes/ToastHost.vue'
 import ConfirmHost from './components/comunes/ConfirmHost.vue'
 import { ui, alternarTema, notificar } from './stores/ui'
 
-const vistas = { sucursales: SucursalesView, proveedores: ProveedoresView, clientes: ClientesView, catalogo: CatalogoView, usuarios: UsuariosView }
+const vistas = { sucursales: SucursalesView, proveedores: ProveedoresView, clientes: ClientesView, catalogo: CatalogoView, usuarios: UsuariosView, ingresos: IngresosView, ventas: VentasView, traslados: TrasladosView }
 const leerModulo = () => window.location.hash.slice(1)
 const actual = ref(leerModulo())
 const navegar = () => { actual.value = leerModulo() }

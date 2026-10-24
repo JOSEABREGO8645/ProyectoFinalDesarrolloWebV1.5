@@ -3,14 +3,26 @@ services:
     image: mongo:8.2
     container_name: mongodb_libreria
     restart: unless-stopped
+    entrypoint: ["bash", "/usr/local/bin/libreria-mongo.sh"]
+    command: ["mongod", "--bind_ip_all", "--port", "27018", "--replSet", "rs0", "--keyFile", "/data/configdb/libreria.key"]
     ports:
-      - "27018:27017"
+      - "27018:27018"
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: Libreria2026
       MONGO_INITDB_DATABASE: libreria_san_francisco
     volumes:
       - mongodb_libreria_data:/data/db
+      - mongodb_libreria_config:/data/configdb
+      - ./docker/mongo/iniciar.sh:/usr/local/bin/libreria-mongo.sh:ro
+      - ./docker/mongo/salud.sh:/usr/local/bin/libreria-salud.sh:ro
+    healthcheck:
+      test: ["CMD", "bash", "/usr/local/bin/libreria-salud.sh"]
+      interval: 5s
+      timeout: 10s
+      start_period: 15s
+      retries: 12
 
 volumes:
   mongodb_libreria_data:
+  mongodb_libreria_config:

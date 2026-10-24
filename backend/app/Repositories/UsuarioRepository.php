@@ -87,7 +87,8 @@ class UsuarioRepository
     public function enUso(string $id): bool
     {
         foreach (['ventas', 'traslados', 'ingresos', 'movimientos'] as $coleccion) {
-            if (DB::connection('mongodb')->table($coleccion)->where('usuario_id', $id)->exists()) {
+            if (DB::connection('mongodb')->table($coleccion)->where(fn ($q) => $q->where('usuario_id', $id)
+                ->orWhere('anulado_por_id', $id)->orWhere('confirmado_por_id', $id))->exists()) {
                 return true;
             }
         }
