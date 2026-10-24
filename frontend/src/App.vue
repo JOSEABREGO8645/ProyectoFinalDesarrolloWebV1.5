@@ -1,5 +1,8 @@
 <script setup>
 import SucursalesView from './views/SucursalesView.vue'
+import ToastHost from './components/comunes/ToastHost.vue'
+import ConfirmHost from './components/comunes/ConfirmHost.vue'
+import { ui, alternarTema } from './stores/ui'
 </script>
 
 <template>
@@ -12,8 +15,13 @@ import SucursalesView from './views/SucursalesView.vue'
     <main class="main">
       <header class="topbar">
         <h1 class="headline grow">Sucursales</h1>
+        <button class="icon-btn" title="Cambiar tema" @click="alternarTema">
+          <span class="icon">{{ ui.tema === 'dark' ? 'light_mode' : 'dark_mode' }}</span>
+        </button>
       </header>
       <SucursalesView class="page" />
     </main>
   </div>
+  <ToastHost />
+  <ConfirmHost />
 </template>
