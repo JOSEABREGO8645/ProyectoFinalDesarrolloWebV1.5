@@ -1,0 +1,11 @@
+node_modules/
+vendor/
+dist/
+.env
+.env.*
+!.env.example
+*.log
+pie.phar
+.vscode/
+Thumbs.db
+.DS_Store

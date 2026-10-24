@@ -1,0 +1,16 @@
+services:
+  mongodb:
+    image: mongo:8.2
+    container_name: mongodb_libreria
+    restart: unless-stopped
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: Libreria2026
+      MONGO_INITDB_DATABASE: libreria_san_francisco
+    volumes:
+      - mongodb_libreria_data:/data/db
+
+volumes:
+  mongodb_libreria_data:
