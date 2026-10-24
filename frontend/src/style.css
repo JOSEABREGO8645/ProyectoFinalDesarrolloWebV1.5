@@ -207,6 +207,18 @@ button.chip.sel { background: var(--secondary-container); box-shadow: none; }
 @media (max-width: 839px) { .login { grid-template-columns: 1fr; } .login .hero { min-height: 240px; padding: 28px; border-radius: 0 0 var(--r-xl) var(--r-xl); } .login .hero .s2 { display: none; } }
 
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+.dashboard h2 { margin: 0; font-size: 1.3rem; }
+.dashboard form .field { width: 200px; }
+.dashboard .stat { text-decoration: none; min-width: 0; }
+.dashboard .stat .big { font-size: clamp(1.6rem, 3vw, 2.3rem); overflow-wrap: anywhere; }
+.dashboard-recientes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: 16px; }
+.dashboard-documento { padding: 12px 0; border-bottom: 1px solid var(--outline-variant); }
+.dashboard-documento p { margin: 8px 0; }
+.grafica-scroll { overflow-x: auto; }
+.grafica-ventas { display: grid; gap: 8px; align-items: end; min-height: 180px; }
+.dia-ventas { display: flex; flex-direction: column; justify-content: end; align-items: center; gap: 8px; min-height: 180px; padding: 4px; border-radius: var(--r-sm); color: inherit; }
+.dia-ventas:hover, .dia-ventas.seleccionado { background: var(--primary-container); }
+.barra-ventas { display: block; width: min(100%, 40px); min-width: 10px; border-radius: 8px 8px 3px 3px; background: var(--primary); }
 .stat { padding: 22px 24px; display: flex; flex-direction: column; gap: 4px; animation: entra var(--t-spatial) var(--spring-soft) both; animation-delay: calc(var(--i, 0) * 60ms); transition: border-radius var(--t-spatial) var(--spring-spatial), transform var(--t-spatial) var(--spring-spatial); }
 .stat:hover { transform: translateY(-3px); border-radius: var(--r-lg) !important; }
 .stat .big { font-size: 2.6rem; line-height: 1.05; font-weight: 800; font-stretch: 112%; letter-spacing: -.02em; }

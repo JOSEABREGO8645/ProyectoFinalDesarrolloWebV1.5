@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogoController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OperacionController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
@@ -44,6 +45,7 @@ Route::prefix('auth')->middleware('origen.sesion')->group(function () {
 });
 
 Route::middleware('auth.jwt')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('modulo:catalogo,ventas,ingresos,traslados');
     foreach (['ingresos', 'ventas', 'traslados'] as $tipo) {
         Route::get('/'.$tipo, [OperacionController::class, 'index'])->defaults('tipo', $tipo)->middleware('modulo:'.$tipo);
         Route::post('/'.$tipo, [OperacionController::class, 'store'])->defaults('tipo', $tipo)

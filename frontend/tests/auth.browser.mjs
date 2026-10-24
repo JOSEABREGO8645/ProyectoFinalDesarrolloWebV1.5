@@ -95,7 +95,7 @@ try {
   const cerrado = await evaluar(`fetch('/api/auth/refresh', { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest', Accept: 'application/json' } }).then(r => r.status)`)
   assert.equal(cerrado, 401, 'El refresh sobrevivió al cierre de sesión')
   await login(empleado, claveEmpleado)
-  await esperar(`document.querySelector('.topbar h1')?.textContent === 'Catálogo' && !document.querySelector('.spinner')`, 'El empleado no ingresó a su módulo')
+  await esperar(`document.querySelector('.topbar h1')?.textContent === 'Inicio' && !document.querySelector('.spinner')`, 'El empleado no ingresó a su resumen permitido')
   assert.equal(await evaluar(`!!document.querySelector('.rail a[href="#usuarios"]') || !!document.querySelector('.rail a[href="#proveedores"]')`), false, 'Se mostraron módulos no asignados')
   assert.equal(await api(`try { await api.get('/admin/usuarios'); return 200; } catch(e) { return e.response.status; }`), 403)
   assert.equal(await evaluar(`fetch('/api/productos', { headers: { Accept: 'application/json' } }).then(r => r.status)`), 401, 'La cookie sola permitió acceder sin JWT')

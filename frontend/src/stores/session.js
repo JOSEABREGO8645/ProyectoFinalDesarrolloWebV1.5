@@ -4,7 +4,9 @@ import { notificar, ui } from './ui'
 
 export const session = reactive({ usuario: null, listo: false, error: '', cerrando: false })
 export const esSuper = () => session.usuario?.rol === 'superusuario'
-export const puede = modulo => !!session.usuario && (esSuper() || (modulo !== 'usuarios' && session.usuario.modulos.includes(modulo)))
+export const puede = modulo => !!session.usuario && (modulo === 'inicio'
+  ? ['catalogo', 'ventas', 'ingresos', 'traslados'].some(puede)
+  : esSuper() || (modulo !== 'usuarios' && session.usuario.modulos.includes(modulo)))
 let temporizador
 
 observarSesion(datos => {

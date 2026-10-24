@@ -1,0 +1,586 @@
+{
+  "info": {
+    "name": "Dashboard: resumen protegido",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8002/api"
+    },
+    {
+      "key": "usuario",
+      "value": ""
+    },
+    {
+      "key": "password",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Login administrador",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/login",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"usuario\": \"{{usuario}}\", \"password\": \"{{password}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.collectionVariables.set('access_token',pm.response.json().access_token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Perfil y sucursal",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/auth/me",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.collectionVariables.set('sucursal_id',pm.response.json().sucursal_id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Resumen con datos integrados",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/dashboard?sucursal_id={{sucursal_id}}",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "const d=pm.response.json();pm.test('Stock e importes exactos',()=>{pm.expect(d.inventario.unidades).to.eql(5);pm.expect(d.ventas.total_centavos).to.eql(303);pm.expect(d.ingresos.total_centavos).to.eql(470);pm.expect(d.traslados.pendientes.documentos).to.eql(1);});pm.collectionVariables.set('hoy',d.periodo.hasta);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Periodo de un dia",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/dashboard?sucursal_id={{sucursal_id}}&desde={{hoy}}&hasta={{hoy}}",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Un dia sin perder importes',()=>{const d=pm.response.json();pm.expect(d.ventas.diarias.length).to.eql(1);pm.expect(d.ventas.total_centavos).to.eql(303);});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Todas las sucursales",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/dashboard",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Consulta global',()=>pm.expect(pm.response.json().sucursal_id).to.eql(null));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fechas invertidas",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/dashboard?desde=2026-10-24&hasta=2026-10-23",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 422',()=>pm.response.to.have.status(422));",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Periodo demasiado largo",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/dashboard?desde=2026-01-01&hasta=2026-10-24",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 422',()=>pm.response.to.have.status(422));",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sucursal inexistente",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/dashboard?sucursal_id=000000000000000000000000",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 404',()=>pm.response.to.have.status(404));",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Filtro mal formado",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/dashboard?sucursal_id=incorrecto",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 422',()=>pm.response.to.have.status(422));",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sin sesion",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/dashboard",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 401',()=>pm.response.to.have.status(401));",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login cajero",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/login",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"usuario\": \"dashboard.caja.e2e\", \"password\": \"{{password}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.collectionVariables.set('token_caja',pm.response.json().access_token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Solo datos autorizados",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/dashboard",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token_caja}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Sin filtracion de otros modulos',()=>{const d=pm.response.json();pm.expect(d.ventas.total_centavos).to.eql(303);for(const k of ['inventario','ingresos','traslados'])pm.expect(d).not.to.have.property(k);});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "No consultar otra sucursal",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/dashboard?sucursal_id=000000000000000000000000",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token_caja}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 403',()=>pm.response.to.have.status(403));",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login sin modulo compatible",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/login",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"usuario\": \"dashboard.sin.e2e\", \"password\": \"{{password}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.collectionVariables.set('token_sin',pm.response.json().access_token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard sin permiso",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/dashboard",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token_sin}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 403',()=>pm.response.to.have.status(403));",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cerrar sesion",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/logout",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              ""
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
