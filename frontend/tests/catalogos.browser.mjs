@@ -22,6 +22,8 @@ try {
   await esperar(`!!document.getElementById('form-login')`, 'No mostro el login')
   await llenar('form-login', { 'Usuario': usuario, 'Contrase\u00f1a': password })
   await click('Iniciar sesi\u00f3n')
+  await esperar(`!!document.querySelector('.bienvenida')`, 'No mostro bienvenida')
+  await evaluar(`location.hash = 'proveedores'`)
   await esperar(`document.querySelector('h1')?.textContent === 'Proveedores' && !document.querySelector('.spinner')`, 'No cargó Proveedores')
   await click('addAgregar proveedor')
   await esperar(`!!document.getElementById('form-proveedor')`, 'No abrió el formulario')

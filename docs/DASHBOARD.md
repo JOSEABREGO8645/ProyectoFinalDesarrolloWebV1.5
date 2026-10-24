@@ -2,7 +2,7 @@
 
 ## Acceso y datos
 
-GET /api/dashboard exige JWT y alguno de estos módulos: catalogo, ventas, ingresos o traslados. Inicio aparece automáticamente en la navegación al disponer de alguno de ellos; no es un módulo asignable nuevo. El servicio comprueba cada permiso antes de consultar su indicador y omite completamente los indicadores no autorizados. Un empleado solo consulta su sucursal; el superusuario puede elegir una o consultar todas. Una sucursal histórica inactiva se puede consultar; una referencia inexistente devuelve 404.
+GET /api/dashboard exige JWT y alguno de estos módulos: catalogo, ventas, ingresos o traslados. Dashboard aparece automáticamente en la navegación al disponer de alguno de ellos; no es un módulo asignable nuevo. Inicio es la pantalla de bienvenida para todos los usuarios y se abre después de cada login correcto; el dashboard se abre desde su apartado independiente. El servicio comprueba cada permiso antes de consultar su indicador y omite completamente los indicadores no autorizados. Un empleado solo consulta su sucursal; el superusuario puede elegir una o consultar todas. Una sucursal histórica inactiva se puede consultar; una referencia inexistente devuelve 404.
 
 La arquitectura mantiene Controller delgado, DashboardRequest, DashboardService y DashboardRepository. Las agregaciones usan directamente las colecciones MongoDB; no utilizan los listados de 200/500 registros de los CRUD para calcular totales. La migración agregar_indices_dashboard añade índices de fechas/sucursal en documentos y de estado en traslados. No hay escrituras de inventario desde el dashboard.
 

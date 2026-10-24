@@ -1,0 +1,1081 @@
+{
+  "info": {
+    "name": "Reportes: nueve analisis y exportacion",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8002/api"
+    },
+    {
+      "key": "usuario",
+      "value": ""
+    },
+    {
+      "key": "password",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/login",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"usuario\": \"{{usuario}}\", \"password\": \"{{password}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.collectionVariables.set('access_token',pm.response.json().access_token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sucursal del perfil",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/auth/me",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.collectionVariables.set('sucursal_id',pm.response.json().sucursal_id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Nueve reportes distintos",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Nueve tipos y titulos distintos',()=>{const r=pm.response.json().reportes;pm.expect(r.length).to.eql(9);pm.expect(new Set(r.map(x=>x.titulo)).size).to.eql(9);});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Selector incluye historicos",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/productos?q=REP-HISTORICO",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Producto inactivo disponible para filtrar',()=>{const r=pm.response.json();pm.expect(r.length).to.eql(1);pm.expect(r[0].activo).to.eql(false);});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "existencias",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/existencias?sucursal_id={{sucursal_id}}&por_pagina=1",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "const r=pm.response.json();const valor=l=>r.resumen.find(x=>x.label===l).valor;pm.test('Total completo con una fila visible',()=>{pm.expect(r.filas.length).to.eql(1);pm.expect(r.paginacion.total).to.be.above(25);pm.expect(valor('Unidades')).to.eql(5);});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "valoracion",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/valoracion?sucursal_id={{sucursal_id}}",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "const r=pm.response.json();const valor=l=>r.resumen.find(x=>x.label===l).valor;pm.test('Costo y margen exactos',()=>{pm.expect(valor('Valor al costo')).to.eql('2.35');pm.expect(valor('Valor de venta')).to.eql('5.05');pm.expect(valor('Margen potencial')).to.eql('2.70');});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "kardex",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/kardex?sucursal_id={{sucursal_id}}",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "const r=pm.response.json();const valor=l=>r.resumen.find(x=>x.label===l).valor;pm.test('Entradas, salidas y variacion',()=>{pm.expect(valor('Entradas del per\u00edodo')).to.eql(11);pm.expect(valor('Salidas del per\u00edodo')).to.eql(6);pm.expect(valor('Variaci\u00f3n del per\u00edodo')).to.eql(5);});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "ventas-diarias",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/ventas-diarias?sucursal_id={{sucursal_id}}",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "const r=pm.response.json();const valor=l=>r.resumen.find(x=>x.label===l).valor;pm.test('Ventas emitidas sin anuladas',()=>{pm.expect(valor('Documentos')).to.eql(1);pm.expect(valor('Importe total')).to.eql('3.03');});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "productos-vendidos",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/productos-vendidos?sucursal_id={{sucursal_id}}",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Ranking de productos',()=>{const r=pm.response.json();pm.expect(r.filas[0].codigo).to.eql('000-REP-E2E');pm.expect(r.filas[0].cantidad).to.eql(3);});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "ventas-clientes",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/ventas-clientes?sucursal_id={{sucursal_id}}",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Agrupa Consumidor Final',()=>{const r=pm.response.json();pm.expect(r.filas[0].nit).to.eql('CF');pm.expect(r.filas[0].total).to.eql('3.03');});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "ingresos-proveedores",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/ingresos-proveedores?sucursal_id={{sucursal_id}}",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "const r=pm.response.json();const valor=l=>r.resumen.find(x=>x.label===l).valor;pm.test('Costo por proveedor',()=>pm.expect(valor('Importe total')).to.eql('4.70'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "flujo-traslados",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/flujo-traslados?sucursal_id={{sucursal_id}}",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "const r=pm.response.json();const valor=l=>r.resumen.find(x=>x.label===l).valor;pm.test('Flujo pendiente',()=>{pm.expect(valor('Unidades pendientes')).to.eql(2);pm.expect(r.filas[0].estado).to.eql('enviado');});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "anulaciones",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/anulaciones?sucursal_id={{sucursal_id}}",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "const r=pm.response.json();const valor=l=>r.resumen.find(x=>x.label===l).valor;pm.test('Auditoria por accion',()=>{pm.expect(valor('Ventas anuladas')).to.eql(1);pm.expect(r.filas[0].motivo).to.eql('=PRUEBA()');});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "CSV exporta mas que la pagina",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/existencias?sucursal_id={{sucursal_id}}&por_pagina=1&formato=csv",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('CSV completo conserva codigos',()=>{pm.expect(pm.response.headers.get('Content-Type')).to.include('text/csv');pm.expect(pm.response.text()).to.include('000-REP-E2E');pm.expect(pm.response.text().split(String.fromCharCode(10)).filter(Boolean).length).to.be.above(25);});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "CSV neutraliza formulas",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/anulaciones?sucursal_id={{sucursal_id}}&formato=csv",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Texto seguro para hoja de calculo',()=>pm.expect(pm.response.text()).to.include(\"'=PRUEBA()\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Referencia inexistente",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/existencias?producto_id=000000000000000000000000",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 404',()=>pm.response.to.have.status(404));",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reporte inexistente",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/desconocido",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 404',()=>pm.response.to.have.status(404));",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tipo con puntos",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/existencias.columnas",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 404',()=>pm.response.to.have.status(404));",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Filtro incompatible",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/ventas-diarias?estado=anulado",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 422',()=>pm.response.to.have.status(422));",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rango excesivo",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/ventas-diarias?desde=2024-01-01&hasta=2026-10-24",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 422',()=>pm.response.to.have.status(422));",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fechas invertidas",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/kardex?desde=2026-10-25&hasta=2026-10-24",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 422',()=>pm.response.to.have.status(422));",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Paginacion invalida",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/existencias?por_pagina=101",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 422',()=>pm.response.to.have.status(422));",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sin sesion",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 401',()=>pm.response.to.have.status(401));",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login analista",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/login",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"usuario\": \"analista.reportes.e2e\", \"password\": \"{{password}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.collectionVariables.set('analista',pm.response.json().access_token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analista solo en su sucursal",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/existencias",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{analista}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Sucursal obligatoria del perfil',()=>pm.expect(pm.response.json().filtros.sucursal_id).to.eql(pm.collectionVariables.get('sucursal_id')));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Otra sucursal prohibida",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/existencias?sucursal_id=000000000000000000000000",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{analista}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 403',()=>pm.response.to.have.status(403));",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "CSV de otra sucursal prohibido",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/existencias?sucursal_id=000000000000000000000000&formato=csv",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{analista}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 403',()=>pm.response.to.have.status(403));",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login sin permiso",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/login",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"usuario\": \"sin.reportes.e2e\", \"password\": \"{{password}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.collectionVariables.set('sin_permiso',pm.response.json().access_token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reportes sin permiso",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{sin_permiso}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 403',()=>pm.response.to.have.status(403));",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "CSV sin permiso",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/existencias?formato=csv",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{sin_permiso}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 403',()=>pm.response.to.have.status(403));",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cerrar sesion",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/logout",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              ""
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

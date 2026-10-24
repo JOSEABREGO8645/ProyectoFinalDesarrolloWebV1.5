@@ -16,6 +16,7 @@ async function entrar(nombre) {
   await esperar(`!!document.getElementById('form-login')`, 'No mostró login')
   await llenar('form-login', { Usuario: nombre, Contraseña: password })
   await click('Iniciar sesión')
+  await esperar(`!!document.querySelector('.bienvenida')`, 'No mostró la bienvenida')
   await esperar(`!!document.querySelector('.rail') && !document.querySelector('.spinner')`, 'No abrió la sesión')
 }
 async function salir() {
@@ -56,6 +57,7 @@ try {
   await cdp('Network.clearBrowserCookies')
   await navegador.navegar(`${frontend}/#ingresos`)
   await entrar(usuario)
+  await modulo('ingresos')
   const perfil = (await api('/auth/me')).data
   const proveedor = (await api('/catalogos/proveedores')).data.find(p => p.nombre === 'Proveedor Operaciones E2E')
   const destino = (await api('/catalogos/destinos')).data.find(s => s.nombre === 'Destino Operaciones E2E')

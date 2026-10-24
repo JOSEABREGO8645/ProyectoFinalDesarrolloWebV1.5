@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OperacionController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\SucursalController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Http\Request;
@@ -45,6 +46,9 @@ Route::prefix('auth')->middleware('origen.sesion')->group(function () {
 });
 
 Route::middleware('auth.jwt')->group(function () {
+    Route::get('/reportes', [ReporteController::class, 'index'])->middleware('modulo:reportes');
+    Route::get('/reportes/productos', [ReporteController::class, 'productos'])->middleware('modulo:reportes');
+    Route::get('/reportes/{tipo}', [ReporteController::class, 'show'])->middleware('modulo:reportes');
     Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('modulo:catalogo,ventas,ingresos,traslados');
     foreach (['ingresos', 'ventas', 'traslados'] as $tipo) {
         Route::get('/'.$tipo, [OperacionController::class, 'index'])->defaults('tipo', $tipo)->middleware('modulo:'.$tipo);
@@ -58,11 +62,11 @@ Route::middleware('auth.jwt')->group(function () {
     Route::get('/auth/me', [AuthController::class, 'me']);
     Route::post('/auth/verificar-codigo', [AuthController::class, 'verificarCodigo'])->middleware(['modulo:ventas', 'throttle:codigo']);
 
-    Route::get('/catalogos/sucursales', [CatalogoController::class, 'sucursales'])->middleware('modulo:catalogo,sucursales,usuarios,ventas,traslados,ingresos');
-    Route::get('/catalogos/proveedores', [CatalogoController::class, 'proveedores'])->middleware('modulo:catalogo,proveedores,ingresos');
-    Route::get('/catalogos/productos', [CatalogoController::class, 'productos'])->middleware('modulo:catalogo,ventas,traslados,ingresos');
+    Route::get('/catalogos/sucursales', [CatalogoController::class, 'sucursales'])->middleware('modulo:catalogo,sucursales,usuarios,ventas,traslados,ingresos,reportes');
+    Route::get('/catalogos/proveedores', [CatalogoController::class, 'proveedores'])->middleware('modulo:catalogo,proveedores,ingresos,reportes');
+    Route::get('/catalogos/productos', [CatalogoController::class, 'productos'])->middleware('modulo:catalogo,ventas,traslados,ingresos,reportes');
     Route::get('/catalogos/destinos', [CatalogoController::class, 'destinos'])->middleware('modulo:traslados');
-    Route::get('/catalogos/clientes', [CatalogoController::class, 'clientes'])->middleware('modulo:clientes,ventas');
+    Route::get('/catalogos/clientes', [CatalogoController::class, 'clientes'])->middleware('modulo:clientes,ventas,reportes');
 
     Route::middleware('modulo:sucursales')->group(function () {
         Route::get('/sucursales', [SucursalController::class, 'index']);

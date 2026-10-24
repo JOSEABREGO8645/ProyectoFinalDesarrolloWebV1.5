@@ -4,7 +4,7 @@ import { notificar, ui } from './ui'
 
 export const session = reactive({ usuario: null, listo: false, error: '', cerrando: false })
 export const esSuper = () => session.usuario?.rol === 'superusuario'
-export const puede = modulo => !!session.usuario && (modulo === 'inicio'
+export const puede = modulo => !!session.usuario && (modulo === 'inicio' ? true : modulo === 'dashboard'
   ? ['catalogo', 'ventas', 'ingresos', 'traslados'].some(puede)
   : esSuper() || (modulo !== 'usuarios' && session.usuario.modulos.includes(modulo)))
 let temporizador
@@ -37,6 +37,7 @@ export async function inicializarSesion() {
 export async function iniciarSesion(usuario, password) {
   const { data } = await api.post('/auth/login', { usuario, password }, { omitirRenovacion: true })
   descartarSesion()
+  window.location.hash = 'inicio'
   aceptarSesion(data)
 }
 

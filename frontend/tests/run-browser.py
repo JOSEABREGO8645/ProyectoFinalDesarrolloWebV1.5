@@ -47,23 +47,30 @@ try:
                 if time.monotonic() > deadline:
                     raise RuntimeError(f'No inició el servidor {url}')
                 time.sleep(0.1)
-    scripts = sys.argv[1:] or ['auth.browser.mjs', 'catalogos.browser.mjs', 'operaciones.browser.mjs', 'dashboard.browser.mjs']
+    scripts = sys.argv[1:] or ['auth.browser.mjs', 'catalogos.browser.mjs', 'operaciones.browser.mjs', 'dashboard.browser.mjs', 'reportes.browser.mjs']
     for script in scripts:
-        if script in ('operaciones.browser.mjs', 'inventario.postman_collection.json', 'dashboard.browser.mjs', 'dashboard.postman_collection.json'):
+        cache_temporal = Path(env['CACHE_FILE_PATH']).resolve()
+        if not cache_temporal.is_relative_to(results.resolve()) or not results.resolve().is_relative_to(root.resolve()):
+            raise RuntimeError('La cache temporal no pertenece al espacio de trabajo.')
+        cache_temporal.mkdir(parents=True, exist_ok=True)
+        subprocess.run(['php','tests/Fixtures/limpiar_cache_e2e.php'],cwd=backend,env=env,check=True)
+        if script in ('operaciones.browser.mjs', 'inventario.postman_collection.json', 'dashboard.browser.mjs', 'dashboard.postman_collection.json', 'reportes.browser.mjs', 'reportes.postman_collection.json'):
             subprocess.run(['php', 'tests/Fixtures/inventario_e2e.php'], cwd=backend, env=env, check=True)
         if script in ('dashboard.browser.mjs', 'dashboard.postman_collection.json'):
             subprocess.run(['php', 'tests/Fixtures/dashboard_e2e.php'], cwd=backend, env=env, check=True)
+        if script in ('reportes.browser.mjs','reportes.postman_collection.json'):
+            subprocess.run(['php','tests/Fixtures/reportes_e2e.php'],cwd=backend,env=env,check=True)
         if script.endswith('.postman_collection.json'):
             runner = next((frontend / 'node_modules/.cache/newman/_npx').glob('*/node_modules/newman/bin/newman.js'))
             subprocess.run(['node', str(runner), 'run', str(root / 'docs/postman' / script),
                             '--env-var', 'base_url=http://127.0.0.1:8002/api',
-                            '--env-var', 'usuario=' + ('dashboard.e2e' if script == 'dashboard.postman_collection.json' else 'inventario.postman.e2e' if script == 'inventario.postman_collection.json' else 'postman.e2e'),
+                            '--env-var', 'usuario=' + ('reportes.e2e' if script == 'reportes.postman_collection.json' else 'dashboard.e2e' if script == 'dashboard.postman_collection.json' else 'inventario.postman.e2e' if script == 'inventario.postman_collection.json' else 'postman.e2e'),
                             '--env-var', 'password=' + env['E2E_PASSWORD'], '--env-var', 'codigo=4321',
                             '--env-var', 'password_empleado=EmpleadoPostman2026!',
                             '--reporters', 'cli,json', '--reporter-json-export', str(results / script.replace('.postman_collection.json', '-postman.json'))],
                            cwd=root, env=env, check=True)
             continue
-        env['E2E_USER'] = ('dashboard.e2e' if script == 'dashboard.browser.mjs' else 'operaciones.e2e' if script == 'operaciones.browser.mjs'
+        env['E2E_USER'] = ('reportes.e2e' if script == 'reportes.browser.mjs' else 'dashboard.e2e' if script == 'dashboard.browser.mjs' else 'operaciones.e2e' if script == 'operaciones.browser.mjs'
                            else 'catalogos.e2e' if script == 'catalogos.browser.mjs' else 'admin.e2e')
         subprocess.run(['node', 'tests/' + script], cwd=frontend, env=env, check=True)
 finally:

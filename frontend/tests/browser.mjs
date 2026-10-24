@@ -4,7 +4,9 @@ import { setTimeout as pausa } from 'node:timers/promises'
 export async function conectarNavegador() {
   const navegador = process.env.CDP_URL || 'http://127.0.0.1:9222'
   const paginas = await (await fetch(`${navegador}/json/list`)).json()
-  const pagina = paginas.find(p => p.type === 'page')
+  const paginasApp = paginas.filter(p => p.type === 'page' && !/^(edge|chrome|devtools|chrome-extension):/.test(p.url))
+  const pagina = paginasApp.find(p => p.url.startsWith(process.env.E2E_FRONTEND_URL || 'http://127.0.0.1:5175'))
+    || paginasApp.find(p => /^https?:/.test(p.url)) || paginasApp.find(p => p.url === 'about:blank')
   assert.ok(pagina, 'No hay una pestaña disponible para la prueba')
   const socket = new WebSocket(pagina.webSocketDebuggerUrl)
   await new Promise((resolve, reject) => { socket.onopen = resolve; socket.onerror = reject })
