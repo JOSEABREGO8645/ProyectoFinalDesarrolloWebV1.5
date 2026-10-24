@@ -8,4 +8,6 @@
 - Sin Vue Router: navegación por hash en App.vue.
 
 ## Hecho y verificado
-(vacío por ahora)
+- Fase 1: estructura y docker-compose (mongodb_libreria, puerto 27018) verificados con docker ps y Compass.
+- Fase 2: Laravel + mongodb/laravel-mongodb conectados; GET /api/ping responde ok.
+- Fase 3: API de Sucursales (CRUD + /buscar, nombre único, bloqueo de eliminación con historial) probada en Postman y Compass.
