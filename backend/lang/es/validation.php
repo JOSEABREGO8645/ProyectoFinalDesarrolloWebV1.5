@@ -5,6 +5,7 @@ return [
     'string' => 'El campo :attribute debe ser texto.',
     'email' => 'El campo :attribute debe ser un correo electrónico válido.',
     'numeric' => 'El campo :attribute debe ser un número.',
+    'decimal' => 'El campo :attribute debe tener entre :min y :max decimales.',
     'integer' => 'El campo :attribute debe ser un número entero.',
     'boolean' => 'El campo :attribute debe ser verdadero o falso.',
     'array' => 'El campo :attribute debe ser una lista.',

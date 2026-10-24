@@ -126,6 +126,13 @@ button.chip.sel { background: var(--secondary-container); box-shadow: none; }
 .card { background: var(--sc-low); border-radius: var(--r-xl); padding: 20px; }
 .card.hi { background: var(--sc); } .card.lowest { background: var(--sc-lowest); }
 .stack { display: flex; flex-direction: column; gap: 12px; } .row { display: flex; align-items: center; gap: 12px; } .wrap { flex-wrap: wrap; } .grow { flex: 1; min-width: 0; }
+.form-error { background: var(--error-container); color: var(--on-error-container); border-radius: var(--r-sm); padding: 10px 12px; margin: 12px 0 0; }
+.boot-session { min-height: 100vh; display: grid; place-content: center; gap: 16px; padding: 24px; }
+.session-meta { display: flex; flex-direction: column; text-align: right; font-size: .875rem; max-width: 240px; }
+.session-meta small { color: var(--on-surface-variant); }
+.modulos-field { border: 1px solid var(--outline-variant); border-radius: var(--r-md); padding: 12px; min-width: 0; }
+.modulos-field legend { padding: 0 6px; }
+@media (max-width: 599px) { .session-meta { display: none; } }
 .list { display: flex; flex-direction: column; gap: 4px; }
 .li { display: flex; align-items: center; gap: 16px; padding: 12px 12px 12px 14px; background: var(--sc-low); border-radius: var(--r-sm); transition: border-radius var(--t-spatial) var(--spring-spatial), background var(--t-effects), transform var(--t-spatial) var(--spring-spatial); animation: entra var(--t-spatial) var(--spring-soft) both; animation-delay: calc(var(--i, 0) * 28ms); }
 .li:first-child { border-radius: var(--r-xl) var(--r-xl) var(--r-sm) var(--r-sm); }

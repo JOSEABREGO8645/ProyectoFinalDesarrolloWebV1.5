@@ -43,6 +43,16 @@ class SucursalRepository
         return Sucursal::findOrFail($id);
     }
 
+    public function encontrarActiva(string $id): ?Sucursal
+    {
+        return preg_match('/^[a-f0-9]{24}$/i', $id) ? Sucursal::where('_id', $id)->where('activo', true)->first() : null;
+    }
+
+    public function encontrar(string $id): ?Sucursal
+    {
+        return preg_match('/^[a-f0-9]{24}$/i', $id) ? Sucursal::find($id) : null;
+    }
+
     public function crear(array $datos)
     {
         return Sucursal::create($datos);
@@ -90,5 +100,10 @@ class SucursalRepository
         }
 
         return false;
+    }
+
+    public function tieneUsuariosActivos(string $id): bool
+    {
+        return DB::connection('mongodb')->table('usuarios')->where('sucursal_id', $id)->where('activo', true)->exists();
     }
 }

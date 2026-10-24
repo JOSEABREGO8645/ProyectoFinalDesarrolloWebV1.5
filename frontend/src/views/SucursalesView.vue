@@ -139,7 +139,7 @@ onMounted(cargar)
       :texto="hayFiltros ? 'Pruebe con otra búsqueda o filtro.' : 'Use el botón + para agregar la primera.'" />
     <SucursalesTable v-else :sucursales="sucursales" @editar="editar" @eliminar="eliminar" />
 
-    <button class="fab" @click="nueva"><span class="icon">add</span>Agregar sucursal</button>
+    <Teleport to="body"><button class="fab" @click="nueva"><span class="icon">add</span>Agregar sucursal</button></Teleport>
 
     <SucursalForm v-if="mostrarFormulario" :sucursal="seleccionada" :guardando="guardando"
       :error-servidor="errorForm" @guardar="guardar" @cancelar="cancelar" />

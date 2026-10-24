@@ -7,6 +7,7 @@ onMounted(() => window.addEventListener('keydown', tecla))
 onUnmounted(() => window.removeEventListener('keydown', tecla))
 </script>
 <template>
+  <Teleport to="body">
   <div class="scrim" @mousedown.self="emit('cerrar')">
     <section class="dialog" :class="ancho" role="dialog" aria-modal="true" :aria-label="titulo">
       <header>
@@ -17,4 +18,5 @@ onUnmounted(() => window.removeEventListener('keydown', tecla))
       <footer v-if="$slots.acciones"><slot name="acciones" /></footer>
     </section>
   </div>
+  </Teleport>
 </template>

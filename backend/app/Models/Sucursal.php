@@ -7,7 +7,10 @@ use MongoDB\Laravel\Eloquent\Model;
 class Sucursal extends Model
 {
     protected $connection = 'mongodb';
+
     protected $collection = 'sucursales';
+
+    protected $appends = ['_id'];
 
     protected $fillable = [
         'nombre',

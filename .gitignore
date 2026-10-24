@@ -9,3 +9,4 @@ pie.phar
 .vscode/
 Thumbs.db
 .DS_Store
+frontend/test-results/

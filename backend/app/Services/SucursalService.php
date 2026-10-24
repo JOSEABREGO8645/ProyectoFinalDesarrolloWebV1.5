@@ -39,6 +39,9 @@ class SucursalService
         $this->repository->buscarPorId($id); // 404 si no existe
         $datos = $this->normalizar($datos);
         $this->validarNombreUnico($datos['nombre'], $id);
+        if (! $datos['activo'] && $this->repository->tieneUsuariosActivos($id)) {
+            throw new ReglaNegocioException('Reasigne o desactive los usuarios de esta sucursal antes de desactivarla.', 409);
+        }
 
         return $this->repository->actualizar($id, $datos);
     }
