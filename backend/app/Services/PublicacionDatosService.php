@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Exceptions\ReglaNegocioException;
 use App\Repositories\PublicacionDatosRepository;
+use MongoDB\BSON\Document;
 use MongoDB\Driver\Session;
 
 class PublicacionDatosService
@@ -11,6 +12,55 @@ class PublicacionDatosService
     public const COLECCIONES = ['sucursals', 'proveedores', 'clientes', 'productos', 'usuarios', 'ingresos', 'ventas', 'traslados', 'existencias', 'movimientos', 'contadores'];
 
     public function __construct(private PublicacionDatosRepository $repository) {}
+
+    /** Ajuste editorial de datos ficticios; conserva IDs, importes y movimientos. */
+    public function personalizarEtiquetas(array $reemplazos, ?string $respaldo = null): array
+    {
+        $antes = $this->repository->leerOrigen(self::COLECCIONES);
+        $transformar = function (mixed $valor) use (&$transformar, $reemplazos): mixed {
+            if (is_string($valor)) {
+                return $reemplazos[$valor] ?? $valor;
+            }
+            if (is_array($valor) || is_object($valor)) {
+                foreach ($valor as &$campo) {
+                    $campo = $transformar($campo);
+                }
+            }
+
+            return $valor;
+        };
+        $cambios = [];
+        foreach ($antes['erp'] as $coleccion => $documentos) {
+            foreach ($documentos as $documento) {
+                $original = $documento->toCanonicalExtendedJSON();
+                $nuevo = Document::fromJSON(json_encode($transformar(json_decode($original, flags: JSON_THROW_ON_ERROR)), JSON_THROW_ON_ERROR));
+                if ($this->huellaDocumento($nuevo) !== $this->huellaDocumento($documento)) {
+                    $cambios[$coleccion][] = $nuevo;
+                }
+            }
+        }
+        $resumen = array_map('count', $cambios);
+        if ($respaldo === null || $cambios === []) {
+            return $resumen;
+        }
+        if (! mkdir($respaldo, 0700, true)) {
+            throw new \RuntimeException('No se pudo crear el respaldo privado.');
+        }
+        foreach ($antes['erp'] as $coleccion => $documentos) {
+            $contenido = implode("\n", array_map(fn ($d) => $d->toCanonicalExtendedJSON(), $documentos))."\n";
+            if (file_put_contents($respaldo.'/'.$coleccion.'.jsonl', $contenido) === false) {
+                throw new \RuntimeException('No se pudo completar el respaldo privado.');
+            }
+        }
+        $this->repository->transaccion(function (Session $sesion) use ($antes, $cambios): void {
+            if ($this->huella($this->repository->leerDestino($antes, $sesion)) !== $this->huella($antes)) {
+                throw new ReglaNegocioException('Los datos cambiaron; repita la personalización.', 409);
+            }
+            $this->repository->actualizarEtiquetas($cambios, $sesion);
+        });
+
+        return $resumen;
+    }
 
     private function normalizar(mixed $valor): mixed
     {

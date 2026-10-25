@@ -4,7 +4,7 @@ import { conectarNavegador } from '../../frontend/tests/browser.mjs'
 const base = process.env.E2E_FRONTEND_URL || 'http://127.0.0.1:18080/'
 const acceso = JSON.parse(await readFile(process.env.E2E_ACCESOS || new URL('../../backend/storage/app/private/demo/libreria_demo/accesos.json', import.meta.url), 'utf8'))
 assert.equal(acceso.base, 'libreria_demo')
-const cuenta = acceso.cuentas.find(c => c.usuario === 'caja.demo')
+const cuenta = acceso.cuentas.find(c => ['caja.demo', 'maria.lopez'].includes(c.usuario))
 const n = await conectarNavegador()
 try {
   await n.cdp('Page.enable'); await n.cdp('Runtime.enable')

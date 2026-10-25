@@ -72,4 +72,13 @@ class PublicacionDatosRepository
             }
         }
     }
+
+    public function actualizarEtiquetas(array $cambios, Session $sesion): void
+    {
+        foreach ($cambios as $coleccion => $documentos) {
+            foreach ($documentos as $documento) {
+                $this->destinos['erp']->selectCollection($coleccion)->replaceOne(['_id' => $documento['_id']], $documento, ['session' => $sesion]);
+            }
+        }
+    }
 }

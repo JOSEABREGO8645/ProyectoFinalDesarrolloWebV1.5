@@ -17,7 +17,7 @@ PRIVADO = ROOT / 'backend/storage/app/private/publicacion'
 URL = 'https://libreria-san-francisco.onrender.com'
 accesos = json.loads((PRIVADO / 'storage/app/private/demo/libreria_demo/accesos.json').read_text(encoding='utf-8'))
 assert accesos['base'] == 'libreria_demo'
-cuenta = next(c for c in accesos['cuentas'] if c['usuario'] == 'admin.demo')
+cuenta = next(c for c in accesos['cuentas'] if c['usuario'] in ('admin.demo', 'administracion'))
 config = json.loads((PRIVADO / 'config.json').read_text(encoding='utf-8'))
 archivo = PRIVADO / 'verificacion-online.json'
 estado = json.loads(archivo.read_text(encoding='utf-8')) if archivo.exists() else {'url': URL, 'uuid': {t: str(uuid.uuid4()) for t in ['ingresos', 'ventas', 'traslados']}}
@@ -59,8 +59,8 @@ try:
     token = sesion['access_token']
     origen = sesion['usuario']['sucursal_id']
     productos = pedir('/catalogos/productos')
-    producto = next(p for p in productos if p['codigo'] == '000-DEMO-001')
-    assert producto['nombre'].startswith('DEMO')
+    producto = next(p for p in productos if p['codigo'] in ('000-DEMO-001', '2000000000015'))
+    assert producto['nombre'] in ('DEMO - Cuaderno de líneas', 'Cuaderno de líneas 80 hojas tamaño carta')
     destinos = pedir('/catalogos/destinos')
     destino = next(s['_id'] for s in destinos if s['_id'] != origen)
     item = {'producto_id': producto['_id'], 'cantidad': 1}
