@@ -5,7 +5,7 @@
       "archivo": "01-Proyecto.pdf",
       "paginas": 8,
       "secciones": 8,
-      "bytes": 145488,
+      "bytes": 145564,
       "imagenes_validas": true,
       "identidad_verificada": true
     },
@@ -21,7 +21,7 @@
       "archivo": "03-Manual-tecnico.pdf",
       "paginas": 11,
       "secciones": 11,
-      "bytes": 177452,
+      "bytes": 182023,
       "imagenes_validas": true,
       "identidad_verificada": true
     },
@@ -29,7 +29,7 @@
       "archivo": "04-Manual-usuario.pdf",
       "paginas": 13,
       "secciones": 13,
-      "bytes": 1046758,
+      "bytes": 1046810,
       "imagenes_validas": true,
       "identidad_verificada": true
     },
@@ -37,7 +37,7 @@
       "archivo": "05-Evidencias.pdf",
       "paginas": 7,
       "secciones": 7,
-      "bytes": 472445,
+      "bytes": 476062,
       "imagenes_validas": true,
       "identidad_verificada": true
     },
@@ -45,7 +45,7 @@
       "archivo": "06-Presentacion.pdf",
       "paginas": 8,
       "secciones": 8,
-      "bytes": 95909,
+      "bytes": 95931,
       "imagenes_validas": true,
       "identidad_verificada": true
     }

@@ -42,6 +42,10 @@ El generador de fuentes lee rutas y los conteos de resultados de Postman existen
 
 Para renovar las ilustraciones, iniciar la demostración (`python docker/demostracion.py`), conservar su conjunto de prueba y ejecutar `node docs/herramientas/capturar_manual.mjs`. El script usa únicamente `libreria_demo`, deja un borrador de venta sin registrar y cierra su sesión. No captura las credenciales.
 
-## Pendiente de entrega pública
+## Publicación verificada
 
-La publicación no está terminada hasta crear las cuentas gratuitas, desplegar y comprobar las URLs reales y un proceso completo en línea. Las pruebas locales y los PDF no sustituyen esa evidencia. Las credenciales se entregan por el canal privado que indique el docente; nunca en este documento ni en Git.
+Aplicación: https://libreria-san-francisco.onrender.com. API: https://libreria-san-francisco.onrender.com/api.
+
+Se verificaron acceso y renovación HTTPS, permisos, tres procesos con kardex, nueve reportes JSON/CSV y las tres integraciones. Las APIs de facturación y pagos son simuladas y mantienen el mismo comprobante al repetir la petición HTTP. El registro sanitizado está en `evidencias/publicacion-online.json`.
+
+Accesos para el docente: `backend/storage/app/private/publicacion/accesos-docente.txt`, guardado únicamente en el equipo y excluido de Git. Contiene cuentas ficticias de demostración, sin secretos JWT, de APIs o de Atlas. Entregar por el medio privado que indique el docente.

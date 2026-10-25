@@ -65,6 +65,8 @@ if args.exportar:
         url = urlsplit(datos[clave])
         if url.scheme != 'https' or not (url.hostname or '').endswith('.onrender.com'):
             raise SystemExit('Use las URLs HTTPS reales de los proveedores desplegados en Render.')
+        if url.path not in ['', '/'] or url.query or url.fragment or url.username:
+            raise SystemExit('Las URL de proveedores deben ser bases sin rutas, credenciales, consultas ni fragmentos. El cliente agrega el endpoint.')
     for tipo in ['FACTURACION', 'PAGOS']:
         if not atlas(datos.get('API_' + tipo + '_MONGO_URI', '')):
             raise SystemExit('Complete las URI privadas de Atlas para los dos proveedores.')

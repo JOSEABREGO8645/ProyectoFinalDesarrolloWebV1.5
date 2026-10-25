@@ -1,0 +1,222 @@
+{
+  "url": "https://libreria-san-francisco.onrender.com",
+  "alcance": "HTTPS real con Atlas y datos ficticios",
+  "procesos": {
+    "ingreso": {
+      "numero": 2,
+      "estado": "registrado"
+    },
+    "venta": {
+      "numero": 3,
+      "estado": "emitida"
+    },
+    "traslado": {
+      "numero": 2,
+      "estado": "confirmado"
+    }
+  },
+  "movimientos_verificados": 4,
+  "integraciones": {
+    "facturacion": {
+      "estado": "completada",
+      "idempotencia": true
+    },
+    "pagos": {
+      "estado": "completada",
+      "idempotencia": true
+    }
+  },
+  "idempotencia_http_directa_proveedores": true,
+  "banguat": {
+    "consultado": true,
+    "fecha": "2026-10-24"
+  },
+  "casos": [
+    {
+      "ruta": "/auth/login",
+      "metodo": "POST",
+      "http": 200,
+      "segundos": 2.596
+    },
+    {
+      "ruta": "/catalogos/productos",
+      "metodo": "GET",
+      "http": 200,
+      "segundos": 0.462
+    },
+    {
+      "ruta": "/catalogos/destinos",
+      "metodo": "GET",
+      "http": 200,
+      "segundos": 0.426
+    },
+    {
+      "ruta": "/ingresos",
+      "metodo": "POST",
+      "http": 201,
+      "segundos": 0.52
+    },
+    {
+      "ruta": "/ventas",
+      "metodo": "POST",
+      "http": 201,
+      "segundos": 2.216
+    },
+    {
+      "ruta": "/ventas",
+      "metodo": "POST",
+      "http": 201,
+      "segundos": 2.196
+    },
+    {
+      "ruta": "/traslados",
+      "metodo": "POST",
+      "http": 201,
+      "segundos": 0.473
+    },
+    {
+      "ruta": "/inventario/movimientos?producto_id=6add5d29f2e97190a90df5d3",
+      "metodo": "GET",
+      "http": 200,
+      "segundos": 0.424
+    },
+    {
+      "ruta": "/ventas/6add66c09d69b7598f069846/factura-prueba",
+      "metodo": "POST",
+      "http": 200,
+      "segundos": 0.647
+    },
+    {
+      "ruta": "/ventas/6add66c09d69b7598f069846/factura-prueba",
+      "metodo": "POST",
+      "http": 200,
+      "segundos": 0.615
+    },
+    {
+      "ruta": "/ingresos/6add66be9d69b7598f069844/pago-prueba",
+      "metodo": "POST",
+      "http": 200,
+      "segundos": 0.618
+    },
+    {
+      "ruta": "/ingresos/6add66be9d69b7598f069844/pago-prueba",
+      "metodo": "POST",
+      "http": 200,
+      "segundos": 0.618
+    },
+    {
+      "ruta": "/integraciones/tipo-cambio?monto_usd=10.00",
+      "metodo": "GET",
+      "http": 200,
+      "segundos": 1.175
+    },
+    {
+      "ruta": "/reportes/existencias",
+      "metodo": "GET",
+      "http": 200,
+      "segundos": 1.568
+    },
+    {
+      "ruta": "/reportes/existencias?formato=csv",
+      "metodo": "GET",
+      "http": 200,
+      "segundos": 0.666
+    },
+    {
+      "ruta": "/reportes/valoracion",
+      "metodo": "GET",
+      "http": 200,
+      "segundos": 0.41
+    },
+    {
+      "ruta": "/reportes/valoracion?formato=csv",
+      "metodo": "GET",
+      "http": 200,
+      "segundos": 5.516
+    },
+    {
+      "ruta": "/reportes/kardex",
+      "metodo": "GET",
+      "http": 200,
+      "segundos": 0.427
+    },
+    {
+      "ruta": "/reportes/kardex?formato=csv",
+      "metodo": "GET",
+      "http": 200,
+      "segundos": 0.506
+    },
+    {
+      "ruta": "/reportes/ventas-diarias",
+      "metodo": "GET",
+      "http": 200,
+      "segundos": 0.42
+    },
+    {
+      "ruta": "/reportes/ventas-diarias?formato=csv",
+      "metodo": "GET",
+      "http": 200,
+      "segundos": 0.373
+    },
+    {
+      "ruta": "/reportes/productos-vendidos",
+      "metodo": "GET",
+      "http": 200,
+      "segundos": 0.709
+    },
+    {
+      "ruta": "/reportes/productos-vendidos?formato=csv",
+      "metodo": "GET",
+      "http": 200,
+      "segundos": 0.529
+    },
+    {
+      "ruta": "/reportes/ventas-clientes",
+      "metodo": "GET",
+      "http": 200,
+      "segundos": 0.418
+    },
+    {
+      "ruta": "/reportes/ventas-clientes?formato=csv",
+      "metodo": "GET",
+      "http": 200,
+      "segundos": 0.409
+    },
+    {
+      "ruta": "/reportes/ingresos-proveedores",
+      "metodo": "GET",
+      "http": 200,
+      "segundos": 0.373
+    },
+    {
+      "ruta": "/reportes/ingresos-proveedores?formato=csv",
+      "metodo": "GET",
+      "http": 200,
+      "segundos": 0.448
+    },
+    {
+      "ruta": "/reportes/flujo-traslados",
+      "metodo": "GET",
+      "http": 200,
+      "segundos": 0.452
+    },
+    {
+      "ruta": "/reportes/flujo-traslados?formato=csv",
+      "metodo": "GET",
+      "http": 200,
+      "segundos": 0.372
+    },
+    {
+      "ruta": "/reportes/anulaciones",
+      "metodo": "GET",
+      "http": 200,
+      "segundos": 1.643
+    },
+    {
+      "ruta": "/reportes/anulaciones?formato=csv",
+      "metodo": "GET",
+      "http": 200,
+      "segundos": 0.889
+    }
+  ]
+}

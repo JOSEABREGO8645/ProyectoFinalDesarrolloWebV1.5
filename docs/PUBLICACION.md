@@ -1,6 +1,6 @@
 # Publicación gratuita: Render + MongoDB Atlas
 
-Estado: configuración preparada; todavía no hay cuentas, recursos ni URLs públicas verificadas. La base publicada será ficticia y separada de la información comercial local.
+Estado: aplicación publicada en https://libreria-san-francisco.onrender.com y proveedores en https://libreria-facturacion-demo.onrender.com y https://libreria-pagos-demo.onrender.com. Verificados acceso/renovación HTTPS, permisos, tres procesos con kardex, nueve reportes JSON/CSV y las tres integraciones desde el hosting. Factura y pago conservan el comprobante original al repetir la petición HTTP directamente a los proveedores. La base de Atlas contiene exclusivamente la demostración ficticia, separada de la información comercial local. Evidencia en `docs/evidencias/publicacion-online.json`.
 
 La imagen fue construida y probada localmente: 34 comprobaciones y una colección Postman de 29 solicitudes/48 aserciones sin fallos. El navegador accedió a Vue compilado y renovó su sesión; el reinicio conservó sesión y límite de intentos. Registro en `docs/evidencias/publicacion-local.json`. Estas pruebas usan HTTP de loopback y MongoDB local, y no acreditan una publicación en Render/Atlas.
 
@@ -45,7 +45,7 @@ Los accesos de **esta** demostración publicada se guardan en `backend/storage/a
 3. Para pagos, usar `API_PAGOS_MONGO_URI` y `PAGOS_API_TOKEN`. No intercambiar las credenciales.
 4. Revisar que ambos servicios tienen plan **Free** y desplegar.
 5. Abrir sus URLs reales `/salud`. Deben responder `ok: true`, el tipo correcto y `almacen: mongodb`.
-6. Completar en el archivo privado `FACTURACION_API_URL` con la URL pública real más `/v1/facturas`, y `PAGOS_API_URL` con la otra URL más `/v1/comprobantes-pago`.
+6. Completar `FACTURACION_API_URL` y `PAGOS_API_URL` con las URLs base de los servicios, sin rutas: `https://libreria-facturacion-demo.onrender.com` y `https://libreria-pagos-demo.onrender.com`. ApiPruebaClient añade `/v1/facturas` o `/v1/comprobantes-pago`; incluir esas rutas en la variable las duplicaría.
 
 ## 4. Publicar la aplicación
 

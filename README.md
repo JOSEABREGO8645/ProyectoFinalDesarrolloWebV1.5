@@ -143,9 +143,9 @@ Las APIs simuladas de la fase 13 pueden iniciarse aparte con `node docker/apis/i
 
 La entrega está indexada en [docs/ENTREGA.md](docs/ENTREGA.md): seis PDF con documento del proyecto, diseño, manual técnico, manual de usuario ilustrado, evidencias y presentación. Incluye fuentes editables HTML/CSS/SVG y herramientas reproducibles de captura e impresión. Autor: José Alfredo Davila Abrego, carné 7490236074; se registra el desarrollo individual informado, sin inventar otros integrantes.
 
-## Fase 16 — preparación de publicación gratuita
+## Fase 16 — publicación gratuita verificada
 
-[docs/PUBLICACION.md](docs/PUBLICACION.md) describe Render Free y MongoDB Atlas Free. El Dockerfile de docker/publicacion sirve Vue compilado y Laravel bajo el mismo origen; render.yaml prepara la aplicación y docker/publicacion/render-apis.yaml los dos proveedores independientes. La publicación real sigue pendiente de crear cuentas, desplegar y verificar las URLs.
+[docs/PUBLICACION.md](docs/PUBLICACION.md) describe Render Free y MongoDB Atlas Free. El Dockerfile de docker/publicacion sirve Vue compilado y Laravel bajo el mismo origen; render.yaml prepara la aplicación y docker/publicacion/render-apis.yaml los dos proveedores independientes. Aplicación: https://libreria-san-francisco.onrender.com; API: https://libreria-san-francisco.onrender.com/api. Se verificaron acceso/renovación HTTPS, permisos, tres procesos con kardex, nueve reportes JSON/CSV y tres integraciones. Evidencia sanitizada en docs/evidencias/publicacion-online.json; accesos de entrega únicamente en el archivo privado accesos-docente.txt.
 
 Los proveedores conservan el modo local por archivos. Para publicación usan el driver oficial MongoDB 7.7, autorizado por el usuario, con API_MONGO_URI y API_MONGO_DATABASE; requieren Node 24 y `npm ci` en docker/apis. API_HOST=0.0.0.0 y PORT permiten el enlace del hosting. En producción pública se rechaza iniciar sin historial MongoDB persistente. Laravel permite CACHE_STORE=mongodb sin cambiar su predeterminado local, usando el adaptador que ya incluye mongodb/laravel-mongodb.
 
