@@ -1,0 +1,67 @@
+{
+  "fecha": "2026-10-24",
+  "alcance": "Resultados locales ejecutados en la versión documentada; no son pruebas en la nube.",
+  "backend": {
+    "pruebas": 193,
+    "aserciones": 1538,
+    "fuente": "MEMORY.md, preparación de publicación y caché persistente"
+  },
+  "postman": [
+    {
+      "suite": "auth",
+      "solicitudes": 31,
+      "aserciones": 35,
+      "fallos": 0
+    },
+    {
+      "suite": "catalogos",
+      "solicitudes": 26,
+      "aserciones": 28,
+      "fallos": 0
+    },
+    {
+      "suite": "inventario",
+      "solicitudes": 48,
+      "aserciones": 58,
+      "fallos": 0
+    },
+    {
+      "suite": "dashboard",
+      "solicitudes": 16,
+      "aserciones": 20,
+      "fallos": 0
+    },
+    {
+      "suite": "reportes",
+      "solicitudes": 31,
+      "aserciones": 45,
+      "fallos": 0
+    },
+    {
+      "suite": "integraciones",
+      "solicitudes": 25,
+      "aserciones": 33,
+      "fallos": 0
+    },
+    {
+      "suite": "sucursales",
+      "solicitudes": 29,
+      "aserciones": 39,
+      "fallos": 0
+    },
+    {
+      "suite": "caja",
+      "solicitudes": 22,
+      "aserciones": 30,
+      "fallos": 0
+    },
+    {
+      "suite": "demostracion",
+      "solicitudes": 29,
+      "aserciones": 48,
+      "fallos": 0
+    }
+  ],
+  "rutas_api": 64,
+  "privacidad": "Solo conteos. Se excluyen entornos, cookies, tokens, claves y cuerpos de solicitudes."
+}

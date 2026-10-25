@@ -1,0 +1,9 @@
+{
+  "name": "libreria-apis-academicas",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24 <25" },
+  "scripts": { "start": "node simulador.mjs" },
+  "dependencies": { "mongodb": "7.7.0" }
+}

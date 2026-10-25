@@ -25,7 +25,7 @@ try {
   await cdp('Page.enable');await cdp('Runtime.enable');await cdp('Network.enable');await cdp('Network.clearBrowserCookies')
   await cdp('Emulation.setDeviceMetricsOverride',{width:1365,height:1000,deviceScaleFactor:1,mobile:false})
   await n.navegar(`${frontend}/#ventas`);await entrar(process.env.E2E_USER)
-  assert.equal(await evaluar(`document.querySelector('.rail a').getAttribute('href')`),'#ventas')
+  assert.deepEqual(await evaluar(`[...document.querySelectorAll('.rail a')].slice(0,2).map(a=>a.getAttribute('href'))`),['#inicio','#ventas'])
   assert.equal(await evaluar(`document.querySelector('.bienvenida h2').textContent`),'Bienvenido a Librería San Francisco')
   assert.equal(solicitudes.some(url=>/\/api\/ventas(?:[/?]|$)/.test(url)),false,'Abrió Ventas antes de mostrar la bienvenida')
   await esperar(`getComputedStyle(document.querySelector('.bienvenida')).opacity === '1'`,'No terminó la animación de bienvenida')
@@ -35,7 +35,7 @@ try {
   assert.equal(await evaluar(`document.documentElement.scrollWidth<=innerWidth`),true)
   await writeFile('test-results/bienvenida-movil.png',Buffer.from((await cdp('Page.captureScreenshot',{format:'png'})).data,'base64'))
   await cdp('Emulation.setDeviceMetricsOverride',{width:1365,height:1000,deviceScaleFactor:1,mobile:false})
-  console.log('OK: Ventas primero, bienvenida siempre al iniciar sesión, Inicio disponible y vista móvil')
+  console.log('OK: Inicio primero y Ventas debajo, bienvenida al iniciar sesión y vista móvil')
   await abrirReportes()
   const perfil=(await api('/auth/me')).data
   const meta=(await api('/reportes')).data

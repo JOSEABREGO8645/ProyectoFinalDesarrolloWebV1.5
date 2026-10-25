@@ -32,6 +32,13 @@ class SesionRepository
         Sesion::where('_id', $id)->whereNull('revoked_at')->update(['revoked_at' => $ahora]);
     }
 
+    public function cambiarSucursal(string $id, string $anterior, string $siguiente, int $ahora): bool
+    {
+        return Sesion::where('_id', $id)->whereNull('revoked_at')->where('refresh_expires_at', '>', $ahora)
+            ->where(fn ($q) => $q->where('sucursal_id', $anterior)->orWhereNull('sucursal_id'))
+            ->update(['sucursal_id' => $siguiente]) === 1;
+    }
+
     public function revocarPorUsuario(string $id, int $ahora): void
     {
         Sesion::where('usuario_id', $id)->whereNull('revoked_at')->update(['revoked_at' => $ahora]);

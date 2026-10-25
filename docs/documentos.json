@@ -1,0 +1,55 @@
+{
+  "autor": "José Alfredo Davila Abrego",
+  "carne": "7490236074",
+  "fecha": "2026-10-24",
+  "documentos": [
+    {
+      "nombre": "01-Proyecto",
+      "titulo": "Documento del proyecto",
+      "fuente": "fuentes/01-Proyecto.html",
+      "pdf": "01-Proyecto.pdf",
+      "secciones": 8,
+      "horizontal": false
+    },
+    {
+      "nombre": "02-Diseno",
+      "titulo": "Diseño del sistema",
+      "fuente": "fuentes/02-Diseno.html",
+      "pdf": "02-Diseno.pdf",
+      "secciones": 8,
+      "horizontal": false
+    },
+    {
+      "nombre": "03-Manual-tecnico",
+      "titulo": "Manual técnico",
+      "fuente": "fuentes/03-Manual-tecnico.html",
+      "pdf": "03-Manual-tecnico.pdf",
+      "secciones": 11,
+      "horizontal": false
+    },
+    {
+      "nombre": "04-Manual-usuario",
+      "titulo": "Manual de usuario ilustrado",
+      "fuente": "fuentes/04-Manual-usuario.html",
+      "pdf": "04-Manual-usuario.pdf",
+      "secciones": 13,
+      "horizontal": false
+    },
+    {
+      "nombre": "05-Evidencias",
+      "titulo": "Evidencias de pruebas",
+      "fuente": "fuentes/05-Evidencias.html",
+      "pdf": "05-Evidencias.pdf",
+      "secciones": 7,
+      "horizontal": false
+    },
+    {
+      "nombre": "06-Presentacion",
+      "titulo": "Presentación final",
+      "fuente": "fuentes/06-Presentacion.html",
+      "pdf": "06-Presentacion.pdf",
+      "secciones": 8,
+      "horizontal": true
+    }
+  ]
+}

@@ -12,7 +12,7 @@ abstract class DocumentoInventario extends Model
 
     protected $appends = ['_id'];
 
-    protected $hidden = ['huella'];
+    protected $hidden = ['huella', 'api_en_curso'];
 
     protected $casts = ['numero' => 'integer', 'total_centavos' => 'integer', 'efectivo_centavos' => 'integer', 'cambio_centavos' => 'integer'];
 }

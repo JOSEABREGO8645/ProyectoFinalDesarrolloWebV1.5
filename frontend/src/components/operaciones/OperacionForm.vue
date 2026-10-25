@@ -1,10 +1,11 @@
 <script setup>
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import Dialog from '../comunes/Dialog.vue'
+import TipoCambio from '../integraciones/TipoCambio.vue'
 import { obtenerSucursalesCatalogo, obtenerProveedoresCatalogo } from '../../services/authService'
 import { obtenerProductosOperacion, obtenerClientesOperacion, obtenerDestinos } from '../../services/operacionesService'
 import { mensajeError } from '../../services/api'
-import { session, esSuper } from '../../stores/session'
+import { session } from '../../stores/session'
 import { Q } from '../../utils/format'
 
 const props = defineProps({ tipo: String, guardando: Boolean, incierto: Boolean, error: String })
@@ -100,7 +101,7 @@ onUnmounted(() => { activo = false; clearTimeout(temporizador); clearTimeout(tem
     <form v-else id="form-operacion" class="stack" @submit.prevent="guardar">
       <p v-if="incierto" class="form-error" role="alert">No se confirmó la respuesta. Reintente este mismo registro o revise el historial antes de crear otro.</p>
       <div class="grid2">
-        <label class="field"><select v-model="datos.sucursal_id" :disabled="bloqueado || !esSuper()" aria-label="Sucursal de origen" required><option v-for="s in sucursales.filter(s => s.activo)" :key="s._id" :value="s._id">{{ s.nombre }}</option></select><span>{{ tipo === 'traslados' ? 'Origen' : 'Sucursal' }} *</span></label>
+        <label class="field"><select v-model="datos.sucursal_id" :disabled="true" aria-label="Sucursal de origen" required><option v-for="s in sucursales.filter(s => s.activo)" :key="s._id" :value="s._id">{{ s.nombre }}</option></select><span>{{ tipo === 'traslados' ? 'Origen' : 'Sucursal' }} *</span></label>
         <label v-if="tipo === 'ingresos'" class="field"><select v-model="datos.proveedor_id" :disabled="bloqueado" aria-label="Proveedor del ingreso" required><option value="">Seleccione proveedor</option><option v-for="p in proveedores.filter(p => p.activo)" :key="p._id" :value="p._id">{{ p.nombre }}</option></select><span>Proveedor *</span></label>
         <label v-if="tipo === 'traslados'" class="field"><select v-model="datos.destino_id" :disabled="bloqueado" aria-label="Sucursal de destino" required><option value="">Seleccione destino</option><option v-for="s in opcionesDestino" :key="s._id" :value="s._id">{{ s.nombre }}</option></select><span>Destino *</span></label>
         <label class="field"><input v-model="datos.motivo" :required="tipo !== 'ventas'" :minlength="tipo !== 'ventas' ? 3 : undefined" maxlength="300" placeholder=" " :disabled="bloqueado" aria-label="Referencia o motivo" /><span>{{ tipo === 'ingresos' ? 'Factura / referencia *' : tipo === 'traslados' ? 'Motivo del traslado *' : 'Observación' }}</span></label>
@@ -119,6 +120,7 @@ onUnmounted(() => { activo = false; clearTimeout(temporizador); clearTimeout(tem
       </tbody></table></div>
       <p v-else class="muted">Agregue productos para completar el detalle.</p>
       <div v-if="tipo !== 'traslados'" class="total-box"><strong>Total estimado</strong><strong class="num">{{ Q(total / 100) }}</strong></div>
+      <TipoCambio v-if="tipo !== 'traslados'" />
       <template v-if="tipo === 'ventas'">
         <p class="muted">El total definitivo usa los precios vigentes al guardar.</p>
         <div class="grid2">

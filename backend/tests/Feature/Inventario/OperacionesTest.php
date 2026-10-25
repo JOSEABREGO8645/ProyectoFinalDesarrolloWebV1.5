@@ -188,9 +188,10 @@ class OperacionesTest extends MongoTestCase
         $id = $this->postJson('/api/traslados', $this->datos('traslados', 3))->assertCreated()->json('_id');
         $this->assertSame(2, $this->stock());
         $this->assertSame(0, $this->stock((string) $this->destino->getKey()));
+        $this->postJson('/api/auth/sucursal', ['sucursal_id' => (string) $this->destino->getKey()])->assertOk();
         $this->postJson('/api/traslados/'.$id.'/confirmar', ['motivo' => 'Recibido completo'])->assertOk()->assertJsonPath('estado', 'confirmado');
         $this->postJson('/api/traslados/'.$id.'/confirmar', ['motivo' => 'Segundo intento'])->assertConflict();
-        $this->postJson('/api/traslados/'.$id.'/anular', ['motivo' => 'Intento tardío'])->assertConflict();
+        $this->postJson('/api/traslados/'.$id.'/anular', ['motivo' => 'Intento tardío'])->assertForbidden();
         $this->assertSame(2, $this->stock());
         $this->assertSame(3, $this->stock((string) $this->destino->getKey()));
         $this->assertSame(3, Movimiento::count());
@@ -201,6 +202,7 @@ class OperacionesTest extends MongoTestCase
         $this->ingresar();
         $id = $this->postJson('/api/traslados', $this->datos('traslados', 3))->assertCreated()->json('_id');
         $this->postJson('/api/traslados/'.$id.'/anular', ['motivo' => 'Envío cancelado'])->assertOk()->assertJsonPath('estado', 'anulado');
+        $this->postJson('/api/auth/sucursal', ['sucursal_id' => (string) $this->destino->getKey()])->assertOk();
         $this->postJson('/api/traslados/'.$id.'/confirmar', ['motivo' => 'Recepción tardía'])->assertConflict();
         $this->assertSame(5, $this->stock());
         $this->assertSame(0, $this->stock((string) $this->destino->getKey()));
@@ -301,7 +303,7 @@ class OperacionesTest extends MongoTestCase
         $this->ingresar();
         $id = $this->postJson('/api/traslados', $this->datos('traslados', 4))->assertCreated()->json('_id');
         $resultados = $this->paralelo([
-            ['accion' => 'confirmar', 'tipo' => 'traslados', 'id' => $id],
+            ['accion' => 'confirmar', 'tipo' => 'traslados', 'id' => $id, 'sucursal_activa' => (string) $this->destino->getKey()],
             ['accion' => 'anular', 'tipo' => 'traslados', 'id' => $id],
         ]);
         $this->assertSame([200, 409], $resultados);

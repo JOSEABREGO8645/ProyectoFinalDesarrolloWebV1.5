@@ -57,6 +57,8 @@ button { cursor: pointer; border: 0; background: none; }
 .num { font-variant-numeric: tabular-nums; font-weight: 700; }
 
 /* ---------- Estructura ---------- */
+.demo-banner { margin: 0; padding: 7px 12px; text-align: center; font-weight: 700; font-size: .875rem; background: var(--tertiary-container); color: var(--on-tertiary-container); }
+@media print { .demo-banner { display: block !important; } }
 .app { display: grid; grid-template-columns: 96px 1fr; min-height: 100%; }
 .rail { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 20px 0; overflow-y: auto; scrollbar-width: none; }
 .rail .logo { width: 52px; height: 52px; display: grid; place-items: center; background: var(--tertiary-container); color: var(--on-tertiary-container); border-radius: 58% 42% 38% 62% / 42% 55% 45% 58%; margin-bottom: 14px; transition: border-radius var(--t-spatial) var(--spring-spatial), transform var(--t-spatial) var(--spring-spatial); }
@@ -71,7 +73,7 @@ button { cursor: pointer; border: 0; background: none; }
 .main { min-width: 0; padding: 0 28px 120px 0; }
 .topbar { display: flex; align-items: center; gap: 12px; padding: 22px 0 14px; position: sticky; top: 0; z-index: 5; background: linear-gradient(var(--surface) 78%, transparent); }
 .topbar .grow { flex: 1; min-width: 0; }
-.page { max-width: 1120px; animation: entra var(--t-spatial) var(--spring-soft) both; }
+.page { width: 100%; min-width: 0; animation: entra var(--t-spatial) var(--spring-soft) both; }
 @keyframes entra { from { opacity: 0; transform: translateY(14px) scale(.985); } }
 
 @media (max-width: 839px) {
@@ -130,9 +132,20 @@ button.chip.sel { background: var(--secondary-container); box-shadow: none; }
 .boot-session { min-height: 100vh; display: grid; place-content: center; gap: 16px; padding: 24px; }
 .session-meta { display: flex; flex-direction: column; text-align: right; font-size: .875rem; max-width: 240px; }
 .session-meta small { color: var(--on-surface-variant); }
+.session-meta select { max-width: 230px; padding: 5px 26px 5px 6px; font: inherit; color: var(--on-surface-variant); background: var(--sc-low); border: 1px solid var(--outline-variant); border-radius: 8px; }
+.cambio-sucursal { position: fixed; inset: 0; z-index: 2500; display: grid; place-content: center; text-align: center; background: var(--surface); opacity: .95; }
 .modulos-field { border: 1px solid var(--outline-variant); border-radius: var(--r-md); padding: 12px; min-width: 0; }
 .modulos-field legend { padding: 0 6px; }
-@media (max-width: 599px) { .session-meta { display: none; } }
+@media (max-width: 599px) {
+  .topbar { display: grid; grid-template-columns: minmax(0, 1fr) repeat(3, 36px); grid-template-areas: "titulo inicio tema salir" "sucursal sucursal sucursal sucursal"; gap: 8px; }
+  .topbar .headline { grid-area: titulo; }
+  .topbar > a.icon-btn { grid-area: inicio; }
+  .topbar > button[title="Cambiar tema"] { grid-area: tema; }
+  .topbar > button[aria-label="Cerrar sesión"] { grid-area: salir; }
+  .session-meta { grid-area: sucursal; display: flex; max-width: 100%; text-align: left; align-items: flex-start; }
+  .session-meta strong { display: none; }
+  .session-meta select { max-width: 100%; font-size: .8125rem; }
+}
 .list { display: flex; flex-direction: column; gap: 4px; }
 .li { display: flex; align-items: center; gap: 16px; padding: 12px 12px 12px 14px; background: var(--sc-low); border-radius: var(--r-sm); transition: border-radius var(--t-spatial) var(--spring-spatial), background var(--t-effects), transform var(--t-spatial) var(--spring-spatial); animation: entra var(--t-spatial) var(--spring-soft) both; animation-delay: calc(var(--i, 0) * 28ms); }
 .li:first-child { border-radius: var(--r-xl) var(--r-xl) var(--r-sm) var(--r-sm); }
@@ -290,6 +303,36 @@ button.chip.sel { background: var(--secondary-container); box-shadow: none; }
 .spinner { width: 28px; height: 28px; border-radius: 50%; border: 4px solid var(--primary-container); border-top-color: var(--primary); animation: gira .8s linear infinite; margin: 32px auto; }
 @keyframes gira { to { transform: rotate(360deg); } }
 
+.integracion-box { padding: 16px; border: 1px solid var(--outline-variant); border-radius: var(--r-md); overflow-wrap: anywhere; }
+.integracion-box h4, .integracion-box p { margin: 0; }
+.integracion-box summary { cursor: pointer; font-weight: 600; }
+.integracion-box button { align-self: flex-start; }
+@media print { .no-print { display: none !important; } }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; transition-duration: .01ms !important; }
 }
+
+.pos-caja h2, .pos-caja h3, .pos-caja p { margin: 0; }
+.pos-barra { display: flex; gap: 12px; align-items: stretch; }
+.pos-barra .search { flex: 1; margin: 0; min-width: 180px; min-height: 56px; }
+.pos-barra .btn { flex-shrink: 0; }
+.pos-ayuda { font-size: .875rem; }
+.pos-estado { min-height: 24px; color: var(--primary); font-size: .875rem; }
+.pos-distribucion { display: grid; grid-template-columns: minmax(0, 1fr) 310px; gap: 20px; align-items: start; }
+.pos-distribucion > .stack { min-width: 0; }
+.pos-productos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.pos-productos .producto-operacion { min-width: 0; }
+.pos-productos .producto-operacion strong, .pos-productos .producto-operacion small { overflow-wrap: anywhere; }
+.pos-resumen { position: sticky; top: 100px; min-height: 350px; }
+.pos-total { display: flex; flex-direction: column; gap: 8px; padding: 20px; background: var(--primary-container); color: var(--on-primary-container); border-radius: var(--r-lg); }
+.pos-total strong { font-size: 2.2rem; font-weight: 800; }
+.pos-facturar { width: 100%; margin-top: auto; min-height: 56px; }
+.pos-vacio { display: grid; place-items: center; gap: 12px; text-align: center; padding: 36px 16px; color: var(--on-surface-variant); }
+.pos-vacio .icon { font-size: 42px; opacity: .65; }
+.pos-detalle { min-width: 570px; }
+.pos-clientes { display: grid; gap: 8px; max-height: 320px; overflow: auto; }
+.pos-cobro-total { display: flex; flex-direction: column; gap: 10px; padding: 24px; background: var(--primary-container); color: var(--on-primary-container); border-radius: var(--r-lg); }
+.pos-cobro-total strong { font-size: 2.6rem; font-weight: 800; }
+@media (max-width: 1000px) { .pos-distribucion { grid-template-columns: minmax(0, 1fr) 270px; gap: 14px; } .pos-productos { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 760px) { .pos-distribucion { grid-template-columns: minmax(0, 1fr); } .pos-resumen { position: static; min-height: auto; } .pos-barra { flex-direction: column; } .pos-barra .search { min-width: 0; } }

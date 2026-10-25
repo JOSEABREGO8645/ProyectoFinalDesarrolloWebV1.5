@@ -51,8 +51,8 @@ class OperacionService
     public function crear(string $tipo, array $datos, Usuario $usuario): DocumentoInventario
     {
         $sucursalId = $datos['sucursal_id'] ?? $usuario->sucursal_id;
-        if ($usuario->rol !== 'superusuario' && $sucursalId !== $usuario->sucursal_id) {
-            throw new ReglaNegocioException('Solo puede operar en su sucursal.', 403);
+        if ($sucursalId !== $usuario->sucursal_id) {
+            throw new ReglaNegocioException('Cambie a la sucursal correspondiente antes de registrar el documento.', 403);
         }
         if ($tipo === 'ventas') {
             $this->auth->verificarCodigo($usuario, $datos['codigo']);
@@ -121,6 +121,9 @@ class OperacionService
                 throw new ReglaNegocioException('El total excede Q 99,999,999.99.');
             }
             if ($tipo === 'ventas') {
+                if (isset($datos['total_esperado_centavos']) && (int) $datos['total_esperado_centavos'] !== $total) {
+                    throw new ReglaNegocioException('Los precios cambiaron. Vuelva al detalle, actualice los productos y revise el cobro.', 409);
+                }
                 $efectivo = $this->centavos((string) $datos['efectivo']);
                 if ($efectivo < $total) {
                     throw new ReglaNegocioException('El efectivo recibido es menor al total de la venta.');
@@ -157,7 +160,7 @@ class OperacionService
                 throw new ReglaNegocioException('Solo el superusuario puede anular ingresos y ventas.', 403);
             }
             $confirmar = $tipo === 'traslados' && $accion === 'confirmar';
-            if ($tipo === 'traslados' && $usuario->rol !== 'superusuario'
+            if ($tipo === 'traslados'
                 && $usuario->sucursal_id !== ($confirmar ? $documento->destino_id : $documento->origen_id)) {
                 throw new ReglaNegocioException($confirmar ? 'Solo el destino puede confirmar la recepción.' : 'Solo el origen puede anular el envío.', 403);
             }

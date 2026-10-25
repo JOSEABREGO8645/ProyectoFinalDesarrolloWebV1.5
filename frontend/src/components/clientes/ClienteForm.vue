@@ -3,12 +3,12 @@ import { reactive, ref, watch } from 'vue'
 import Dialog from '../comunes/Dialog.vue'
 import { limpiarNit, validarContacto } from '../../utils/contacto'
 
-const props = defineProps({ cliente: { type: Object, default: null }, guardando: Boolean, errorServidor: String })
+const props = defineProps({ cliente: { type: Object, default: null }, nitInicial: { type: String, default: '' }, guardando: Boolean, errorServidor: String })
 const emit = defineEmits(['guardar', 'cancelar'])
 const formulario = reactive({ nombre: '', nit: '', telefono: '', correo: '', direccion: '' })
 const errorLocal = ref('')
 watch(() => props.cliente, valor => {
-  for (const campo of Object.keys(formulario)) formulario[campo] = valor?.[campo] ?? ''
+  for (const campo of Object.keys(formulario)) formulario[campo] = valor?.[campo] ?? (campo === 'nit' ? props.nitInicial : '')
   errorLocal.value = ''
 }, { immediate: true })
 function enviar() {

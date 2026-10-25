@@ -15,7 +15,12 @@ class Usuario extends Authenticatable
 
     protected $appends = ['_id'];
 
-    protected $fillable = ['nombre', 'usuario', 'password', 'codigo_hash', 'rol', 'sucursal_id', 'modulos', 'activo'];
+    protected $fillable = ['nombre', 'usuario', 'password', 'codigo_hash', 'rol', 'sucursal_id', 'sucursal_ids', 'modulos', 'activo'];
+
+    public function sucursalesAsignadas(): array
+    {
+        return array_values(array_unique((array) ($this->sucursal_ids ?? [$this->getRawOriginal('sucursal_id') ?? $this->sucursal_id])));
+    }
 
     protected $hidden = ['password', 'codigo_hash', 'remember_token'];
 

@@ -34,6 +34,8 @@ class UsuarioRequest extends FormRequest
             'codigo' => ['nullable', 'digits:4'],
             'rol' => ['required', 'in:empleado,superusuario'],
             'sucursal_id' => ['required', 'string', 'regex:/^[a-f0-9]{24}$/i'],
+            'sucursal_ids' => ['sometimes', 'array', 'min:1', 'max:500'],
+            'sucursal_ids.*' => ['required', 'string', 'distinct', 'regex:/^[a-f0-9]{24}$/i'],
             'modulos' => ['sometimes', 'array', 'max:8'],
             'modulos.*' => ['string', 'distinct', Rule::in(config('permisos.modulos'))],
             'activo' => ['sometimes', 'boolean'],

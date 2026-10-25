@@ -1,0 +1,52 @@
+@page { size: A4; margin: 16mm 15mm 17mm; }
+* { box-sizing: border-box; }
+html { color: #22273a; background: #fff; font-family: Arial, sans-serif; font-size: 10.2pt; line-height: 1.42; }
+body { margin: 0; }
+.hoja { break-before: page; }
+.hoja:first-child { break-before: auto; }
+h1 { font-size: 31pt; line-height: 1.1; margin: 12mm 0 5mm; color: #3343a5; letter-spacing: -.5pt; }
+h2 { font-size: 18pt; line-height: 1.18; margin: 0 0 5mm; color: #3343a5; break-after: avoid; }
+h2:not(:first-child) { margin-top: 6mm; }
+h3 { font-size: 12pt; break-after: avoid; }
+p { margin: 0 0 3.2mm; }
+ul, ol { padding-left: 6mm; margin: 3mm 0 5mm; }
+li { margin-bottom: 2mm; }
+strong { color: #1f263e; }
+aside { padding: 3.5mm 4mm; margin: 4mm 0; border-left: 1.2mm solid #e9ac40; background: #fff6e5; break-inside: avoid; }
+table { width: 100%; border-collapse: collapse; font-size: 9.1pt; margin: 4mm 0; }
+thead { display: table-header-group; }
+th { background: #e9eafa; color: #253381; text-align: left; font-weight: 700; }
+td, th { padding: 2.2mm 2.6mm; border-bottom: .25mm solid #dcdde7; vertical-align: top; overflow-wrap: anywhere; }
+tr { break-inside: avoid; }
+tbody tr:nth-child(even) { background: #faf9fd; }
+pre { font-size: 8.1pt; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; background: #f3f2f8; padding: 3.5mm; border-radius: 2mm; margin: 3mm 0 4mm; }
+a { color: #3343a5; text-decoration: underline; }
+figure { margin: 4mm 0 5mm; break-inside: avoid; }
+figure img { display: block; width: 100%; max-height: 132mm; object-fit: contain; object-position: left center; border: .2mm solid #e2e0e9; border-radius: 2mm; }
+figcaption { font-size: 8.1pt; line-height: 1.35; color: #5b6073; margin-top: 2mm; }
+.dialogo img { max-height: 76mm; width: auto; max-width: 100%; margin: 0 auto; }
+.hoja:has(figure ~ figure) figure:not(.dialogo) img { max-height: 105mm; }
+.diagrama img { max-height: 212mm; border: 0; }
+.portada { min-height: 240mm; display: flex; flex-direction: column; }
+.marca { background: #3343a5; color: white; padding: 3mm 5mm; width: fit-content; border-radius: 2mm; font-weight: 700; letter-spacing: 1.2pt; }
+.institucion { margin-top: 10mm; color: #535b71; line-height: 1.6; }
+.bajada { font-size: 16pt; color: #535b71; max-width: 150mm; }
+.autor { margin: 17mm 0 9mm; font-size: 13pt; line-height: 1.7; border-left: 1mm solid #edb650; padding-left: 5mm; }
+.fecha { margin-top: auto; padding-top: 7mm; color: #535b71; }
+.small { font-size: 8.5pt; }
+.diapositivas { font-size: 17pt; line-height: 1.4; }
+.diapositivas h1 { font-size: 34pt; }
+.diapositivas h2 { font-size: 28pt; margin-bottom: 8mm; }
+.diapositivas li { margin-bottom: 5mm; }
+.diapositivas table { font-size: 13pt; }
+.diapositivas .portada { min-height: 168mm; }
+.diapositivas .institucion { font-size: 11pt; margin-top: 4mm; }
+.diapositivas h1 { margin-top: 7mm; }
+.diapositivas .autor { margin: 7mm 0 5mm; font-size: 12pt; }
+.diapositivas .portada > p:not(.bajada):not(.institucion) { font-size: 11pt; }
+.diapositivas .fecha { padding-top: 4mm; }
+@media screen {
+  html { background: #e9e8ef; }
+  .hoja { background: white; width: 210mm; padding: 16mm 15mm; min-height: 297mm; margin: 8mm auto; box-shadow: 0 2px 15px #0002; }
+  .diapositivas .hoja { width: 297mm; min-height: 210mm; }
+}

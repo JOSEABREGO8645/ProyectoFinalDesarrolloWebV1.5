@@ -1,0 +1,53 @@
+{
+  "fecha": "2026-10-24",
+  "documentos": [
+    {
+      "archivo": "01-Proyecto.pdf",
+      "paginas": 8,
+      "secciones": 8,
+      "bytes": 145488,
+      "imagenes_validas": true,
+      "identidad_verificada": true
+    },
+    {
+      "archivo": "02-Diseno.pdf",
+      "paginas": 8,
+      "secciones": 8,
+      "bytes": 154438,
+      "imagenes_validas": true,
+      "identidad_verificada": true
+    },
+    {
+      "archivo": "03-Manual-tecnico.pdf",
+      "paginas": 11,
+      "secciones": 11,
+      "bytes": 177452,
+      "imagenes_validas": true,
+      "identidad_verificada": true
+    },
+    {
+      "archivo": "04-Manual-usuario.pdf",
+      "paginas": 13,
+      "secciones": 13,
+      "bytes": 1046758,
+      "imagenes_validas": true,
+      "identidad_verificada": true
+    },
+    {
+      "archivo": "05-Evidencias.pdf",
+      "paginas": 7,
+      "secciones": 7,
+      "bytes": 472445,
+      "imagenes_validas": true,
+      "identidad_verificada": true
+    },
+    {
+      "archivo": "06-Presentacion.pdf",
+      "paginas": 8,
+      "secciones": 8,
+      "bytes": 95909,
+      "imagenes_validas": true,
+      "identidad_verificada": true
+    }
+  ]
+}

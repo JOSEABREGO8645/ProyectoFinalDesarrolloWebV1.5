@@ -1,0 +1,26 @@
+# Crear después de desplegar los proveedores de render-apis.yaml.
+services:
+  - type: web
+    name: libreria-san-francisco
+    runtime: docker
+    plan: free
+    dockerfilePath: ./docker/publicacion/Dockerfile
+    dockerContext: .
+    healthCheckPath: /up
+    envVars:
+      - key: APP_KEY
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: DB_URI
+        sync: false
+      - key: FACTURACION_API_URL
+        sync: false
+      - key: FACTURACION_API_TOKEN
+        sync: false
+      - key: PAGOS_API_URL
+        sync: false
+      - key: PAGOS_API_TOKEN
+        sync: false
+      - key: PORT
+        value: "10000"

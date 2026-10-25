@@ -1,0 +1,801 @@
+{
+  "info": {
+    "name": "Caja de ventas: búsqueda exacta y confirmación de cobro",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Acceso de pruebas",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/login",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"usuario\":\"{{usuario}}\",\"password\":\"{{password}}\"}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.collectionVariables.set('token',pm.response.json().access_token);pm.collectionVariables.set('sucursal',pm.response.json().usuario.sucursal_id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Proveedor",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/catalogos/proveedores",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.collectionVariables.set('proveedor',pm.response.json().find(p=>p.nombre==='Proveedor Operaciones E2E')._id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Producto con ceros",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/productos",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"codigo\":\"00001234\",\"nombre\":\"Producto Caja Postman\",\"proveedor_id\":\"{{proveedor}}\",\"precio_costo\":\"0.47\",\"precio_venta\":\"1.01\",\"activo\":true}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('producto',pm.response.json().datos._id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Código exacto",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/catalogos/productos?codigo=00001234",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Un producto y ceros conservados',()=>{pm.expect(pm.response.json().length).eq(1);pm.expect(pm.response.json()[0].codigo).eq('00001234');});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "No confunde prefijo",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/catalogos/productos?codigo=1234",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('No hay coincidencia parcial',()=>pm.expect(pm.response.json().length).eq(0));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Código inválido",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/catalogos/productos?codigo=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 422',()=>pm.response.to.have.status(422));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Crear cliente",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/clientes",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"nombre\":\"Cliente Caja PM\",\"nit\":\"CAJA-PM1\"}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('cliente',pm.response.json().datos._id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "NIT exacto normalizado",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/catalogos/clientes?nit=CAJA-PM1",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Cliente por NIT',()=>{pm.expect(pm.response.json().length).eq(1);pm.expect(pm.response.json()[0].nit).eq('CAJAPM1');});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ingreso de diez",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/ingresos",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"operacion_id\":\"{{$guid}}\",\"proveedor_id\":\"{{proveedor}}\",\"motivo\":\"Stock Caja Postman\",\"items\":[{\"producto_id\":\"{{producto}}\",\"cantidad\":10}]}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "No acepta importe desactualizado",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/ventas",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"operacion_id\":\"{{$guid}}\",\"codigo\":\"4321\",\"efectivo\":\"5.00\",\"cliente_id\":\"{{cliente}}\",\"items\":[{\"producto_id\":\"{{producto}}\",\"cantidad\":3}],\"total_esperado_centavos\":300}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 409',()=>pm.response.to.have.status(409));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "No descontó por importe distinto",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/catalogos/productos?codigo=00001234",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Inventario intacto',()=>pm.expect(pm.response.json()[0].existencia).eq(10));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Confirmar factura revisada",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/ventas",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"operacion_id\":\"{{$guid}}\",\"codigo\":\"4321\",\"efectivo\":\"5.00\",\"cliente_id\":\"{{cliente}}\",\"items\":[{\"producto_id\":\"{{producto}}\",\"cantidad\":3}],\"total_esperado_centavos\":303}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('operacion_venta',pm.response.json().operacion_id);pm.collectionVariables.set('venta',pm.response.json()._id);pm.test('Total y cambio reales',()=>{pm.expect(pm.response.json().total_centavos).eq(303);pm.expect(pm.response.json().cambio_centavos).eq(197);});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reintento sin duplicado",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/ventas",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"operacion_id\":\"{{operacion_venta}}\",\"codigo\":\"4321\",\"efectivo\":\"5.00\",\"cliente_id\":\"{{cliente}}\",\"items\":[{\"producto_id\":\"{{producto}}\",\"cantidad\":3}],\"total_esperado_centavos\":303}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));",
+              "pm.test('Misma venta',()=>pm.expect(pm.response.json()._id).eq(pm.collectionVariables.get('venta')));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Verificar operación exacta",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/ventas?operacion_id={{operacion_venta}}",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Una sola venta',()=>pm.expect(pm.response.json().length).eq(1));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stock tras cobrar",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/catalogos/productos?codigo=00001234",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Solo un descuento',()=>pm.expect(pm.response.json()[0].existencia).eq(7));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Importe esperado inválido",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/ventas",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"operacion_id\":\"{{$guid}}\",\"codigo\":\"4321\",\"efectivo\":\"5.00\",\"cliente_id\":\"{{cliente}}\",\"items\":[{\"producto_id\":\"{{producto}}\",\"cantidad\":3}],\"total_esperado_centavos\":-1}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 422',()=>pm.response.to.have.status(422));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Facturar exige código",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/ventas",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"operacion_id\":\"{{$guid}}\",\"efectivo\":\"5.00\",\"cliente_id\":\"{{cliente}}\",\"items\":[{\"producto_id\":\"{{producto}}\",\"cantidad\":3}],\"total_esperado_centavos\":303}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 422',()=>pm.response.to.have.status(422));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Referencia inexistente",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/ventas/ffffffffffffffffffffffff",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 404',()=>pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cuenta sin permisos",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/admin/usuarios",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"nombre\":\"Sin ventas PM\",\"usuario\":\"caja.sin.ventas.pm\",\"password\":\"SinVentasPM2026!\",\"rol\":\"empleado\",\"sucursal_id\":\"{{sucursal}}\",\"modulos\":[],\"activo\":true}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201',()=>pm.response.to.have.status(201));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Acceso sin módulo",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/login",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"usuario\":\"caja.sin.ventas.pm\",\"password\":\"SinVentasPM2026!\"}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200',()=>pm.response.to.have.status(200));",
+              "pm.collectionVariables.set('token',pm.response.json().access_token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Búsqueda protegida",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/catalogos/productos?codigo=00001234",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 403',()=>pm.response.to.have.status(403));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sin sesión",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/ventas",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 401',()=>pm.response.to.have.status(401));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

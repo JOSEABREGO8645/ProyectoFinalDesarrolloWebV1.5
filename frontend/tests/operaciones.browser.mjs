@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { conectarNavegador } from './browser.mjs'
+import { leerEnCaja, prepararCobro } from './caja-helpers.mjs'
 
 const frontend = process.env.E2E_FRONTEND_URL || 'http://127.0.0.1:5175'
 const usuario = process.env.E2E_USER, password = process.env.E2E_PASSWORD
@@ -39,6 +40,7 @@ async function agregar(cantidad) {
 }
 async function cerrarDetalle() { await click('Cerrar', '.dialog footer button'); await esperar(`!document.querySelector('[role="dialog"]')`, 'No cerró el detalle') }
 async function verDocumento(id) {
+  if (await evaluar(`!!document.querySelector('.pos-caja')`)) await click('Historial y kardex')
   await esperar(`!!document.querySelector('[data-documento="${id}"] button')`, 'No está el documento en el historial')
   await evaluar(`document.querySelector('[data-documento="${id}"] button').click()`)
   await esperar(`!!document.querySelector('.comprobante')`, 'No abrió el comprobante')
@@ -88,12 +90,13 @@ try {
   await esperar(`document.querySelector('.tabla-operaciones tbody')?.textContent.includes('Producto Operaciones E2E')`, 'No mostró el kardex')
   console.log('OK: ingreso, kardex y reintento real después de perder la respuesta sin duplicar stock')
 
-  await modulo('ventas'); await abrir(); await agregar(3)
-  await llenar('form-operacion', { 'Efectivo recibido *': '5.00', 'Código de facturación (4 dígitos) *': '0000' })
-  await click('Registrar venta', '.dialog footer button')
-  await esperar(`document.querySelector('#form-operacion')?.textContent.includes('Código de facturación incorrecto')`, 'No rechazó el PIN incorrecto')
-  await llenar('form-operacion', { 'Código de facturación (4 dígitos) *': '4321' })
-  await click('Registrar venta', '.dialog footer button')
+  await modulo('ventas'); await leerEnCaja(navegador, '3*000000-OPS-E2E')
+  await esperar(`document.querySelector('[data-producto="000000-OPS-E2E"] input')?.value==='3'`, 'No leyó el producto')
+  await prepararCobro(navegador, '5.00', '0000')
+  await click('Facturar venta', '.dialog footer button')
+  await esperar(`document.querySelector('.dialog')?.textContent.includes('Código de facturación incorrecto')`, 'No rechazó el PIN incorrecto')
+  await llenar('form-autorizar', { 'Código de facturación (4 dígitos) *': '4321' })
+  await click('Facturar venta', '.dialog footer button')
   await esperar(`document.querySelector('.comprobante')?.textContent.includes('Cambio: Q 1.97')`, 'No mostró el cambio calculado en el servidor')
   const venta = (await api('/ventas')).data.find(d => d.usuario_id === perfil._id && d.items.some(i => i.codigo === '000000-OPS-E2E'))
   assert.equal(venta.total_centavos, 303)

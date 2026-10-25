@@ -14,7 +14,7 @@ frontend = root / 'frontend'
 database = 'libreria_auth_e2e_' + secrets.token_hex(4)
 results = frontend / 'test-results'
 results.mkdir(exist_ok=True)
-for port in (8002, 5175):
+for port in (8002, 5175, 8111, 8112, 8113):
     with socket.socket() as connection:
         if connection.connect_ex(('127.0.0.1', port)) == 0:
             raise RuntimeError(f'El puerto {port} ya está ocupado; no se reemplazará su servidor.')
@@ -27,8 +27,17 @@ env = dict(os.environ, APP_ENV='testing', DB_DATABASE=database,
            E2E_FRONTEND_URL='http://127.0.0.1:5175', E2E_PASSWORD='AutenticacionE2E2026!')
 processes = []
 logs = []
+env.update(FACTURACION_API_URL='http://127.0.0.1:8111', FACTURACION_API_TOKEN=secrets.token_hex(32),
+           PAGOS_API_URL='http://127.0.0.1:8112', PAGOS_API_TOKEN=secrets.token_hex(32),
+           BANGUAT_API_URL='http://127.0.0.1:8113/variables/ws/TipoCambio.asmx')
 try:
     subprocess.run(['php', 'tests/Fixtures/auth_e2e.php'], cwd=backend, env=env, check=True)
+    for tipo, port, token in [('facturacion',8111,env['FACTURACION_API_TOKEN']),('pagos',8112,env['PAGOS_API_TOKEN']),('cambio-prueba',8113,'')]:
+        log = (results / f'{tipo}-e2e.log').open('w',encoding='utf-8')
+        logs.append(log)
+        api_env = dict(env, API_TIPO=tipo, API_PUERTO=str(port), API_TOKEN=token, NODE_ENV='test', API_HOST='127.0.0.1', API_MONGO_URI='', API_MONGO_DATABASE='',
+                       API_DATOS=str(results / database / 'apis' / (tipo+'.json')))
+        processes.append(subprocess.Popen(['node',str(root / 'docker/apis/simulador.mjs')],cwd=root,env=api_env,stdout=log,stderr=subprocess.STDOUT))
     for name, args, cwd in [
         ('php', ['php', '-S', '127.0.0.1:8002', str(backend / 'vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php')], backend / 'public'),
         ('vite', ['node', str(frontend / 'node_modules/vite/bin/vite.js'), '--host', '127.0.0.1', '--port', '5175', '--strictPort'], frontend),
@@ -36,7 +45,7 @@ try:
         log = (results / f'{name}-e2e.log').open('w', encoding='utf-8')
         logs.append(log)
         processes.append(subprocess.Popen(args, cwd=cwd, env=env, stdout=log, stderr=subprocess.STDOUT))
-    for url in ['http://127.0.0.1:8002/api/ping', 'http://127.0.0.1:5175']:
+    for url in ['http://127.0.0.1:8002/api/ping', 'http://127.0.0.1:5175', 'http://127.0.0.1:8111/salud','http://127.0.0.1:8112/salud','http://127.0.0.1:8113/salud']:
         deadline = time.monotonic() + 15
         while True:
             try:
@@ -47,14 +56,14 @@ try:
                 if time.monotonic() > deadline:
                     raise RuntimeError(f'No inició el servidor {url}')
                 time.sleep(0.1)
-    scripts = sys.argv[1:] or ['auth.browser.mjs', 'catalogos.browser.mjs', 'operaciones.browser.mjs', 'dashboard.browser.mjs', 'reportes.browser.mjs']
+    scripts = sys.argv[1:] or ['auth.browser.mjs', 'catalogos.browser.mjs', 'operaciones.browser.mjs', 'dashboard.browser.mjs', 'reportes.browser.mjs', 'integraciones.browser.mjs', 'sucursales.browser.mjs', 'caja.browser.mjs']
     for script in scripts:
         cache_temporal = Path(env['CACHE_FILE_PATH']).resolve()
         if not cache_temporal.is_relative_to(results.resolve()) or not results.resolve().is_relative_to(root.resolve()):
             raise RuntimeError('La cache temporal no pertenece al espacio de trabajo.')
         cache_temporal.mkdir(parents=True, exist_ok=True)
         subprocess.run(['php','tests/Fixtures/limpiar_cache_e2e.php'],cwd=backend,env=env,check=True)
-        if script in ('operaciones.browser.mjs', 'inventario.postman_collection.json', 'dashboard.browser.mjs', 'dashboard.postman_collection.json', 'reportes.browser.mjs', 'reportes.postman_collection.json'):
+        if script in ('operaciones.browser.mjs', 'inventario.postman_collection.json', 'dashboard.browser.mjs', 'dashboard.postman_collection.json', 'reportes.browser.mjs', 'reportes.postman_collection.json', 'integraciones.browser.mjs', 'integraciones.postman_collection.json', 'sucursales.browser.mjs', 'sucursales.postman_collection.json', 'caja.browser.mjs', 'caja.postman_collection.json'):
             subprocess.run(['php', 'tests/Fixtures/inventario_e2e.php'], cwd=backend, env=env, check=True)
         if script in ('dashboard.browser.mjs', 'dashboard.postman_collection.json'):
             subprocess.run(['php', 'tests/Fixtures/dashboard_e2e.php'], cwd=backend, env=env, check=True)
@@ -64,13 +73,13 @@ try:
             runner = next((frontend / 'node_modules/.cache/newman/_npx').glob('*/node_modules/newman/bin/newman.js'))
             subprocess.run(['node', str(runner), 'run', str(root / 'docs/postman' / script),
                             '--env-var', 'base_url=http://127.0.0.1:8002/api',
-                            '--env-var', 'usuario=' + ('reportes.e2e' if script == 'reportes.postman_collection.json' else 'dashboard.e2e' if script == 'dashboard.postman_collection.json' else 'inventario.postman.e2e' if script == 'inventario.postman_collection.json' else 'postman.e2e'),
+                            '--env-var', 'usuario=' + ('reportes.e2e' if script == 'reportes.postman_collection.json' else 'dashboard.e2e' if script == 'dashboard.postman_collection.json' else 'inventario.postman.e2e' if script in ('inventario.postman_collection.json','integraciones.postman_collection.json') else 'postman.e2e'),
                             '--env-var', 'password=' + env['E2E_PASSWORD'], '--env-var', 'codigo=4321',
                             '--env-var', 'password_empleado=EmpleadoPostman2026!',
                             '--reporters', 'cli,json', '--reporter-json-export', str(results / script.replace('.postman_collection.json', '-postman.json'))],
                            cwd=root, env=env, check=True)
             continue
-        env['E2E_USER'] = ('reportes.e2e' if script == 'reportes.browser.mjs' else 'dashboard.e2e' if script == 'dashboard.browser.mjs' else 'operaciones.e2e' if script == 'operaciones.browser.mjs'
+        env['E2E_USER'] = ('reportes.e2e' if script == 'reportes.browser.mjs' else 'dashboard.e2e' if script == 'dashboard.browser.mjs' else 'operaciones.e2e' if script in ('operaciones.browser.mjs','integraciones.browser.mjs','caja.browser.mjs')
                            else 'catalogos.e2e' if script == 'catalogos.browser.mjs' else 'admin.e2e')
         subprocess.run(['node', 'tests/' + script], cwd=frontend, env=env, check=True)
 finally:

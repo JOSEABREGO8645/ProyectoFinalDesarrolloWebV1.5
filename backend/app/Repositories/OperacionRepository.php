@@ -69,6 +69,9 @@ class OperacionRepository
     public function filtrar(string $tipo, array $filtros, ?string $sucursal): array
     {
         $consulta = $this->modelo($tipo)::query();
+        if (! empty($filtros['operacion_id'])) {
+            $consulta->where('operacion_id', $filtros['operacion_id']);
+        }
         if ($sucursal !== null) {
             if ($tipo === 'traslados') {
                 $consulta->where(fn ($q) => $q->where('origen_id', $sucursal)->orWhere('destino_id', $sucursal));

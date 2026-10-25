@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import OperacionForm from './OperacionForm.vue'
 import OperacionesTable from './OperacionesTable.vue'
 import Dialog from '../comunes/Dialog.vue'
+import ComprobantePrueba from '../integraciones/ComprobantePrueba.vue'
 import { obtenerSucursalesCatalogo } from '../../services/authService'
 import { obtenerKardex } from '../../services/operacionesService'
 import { mensajeError } from '../../services/api'
@@ -10,7 +11,8 @@ import { session, esSuper } from '../../stores/session'
 import { confirmar, notificar } from '../../stores/ui'
 import { Q, fecha, pad } from '../../utils/format'
 
-const props = defineProps({ tipo: String, servicio: Object })
+const props = defineProps({ tipo: String, servicio: Object, soloConsulta: Boolean, documentoInicial: Object })
+const emit = defineEmits(['detalle-cerrado'])
 const singular = { ingresos: 'ingreso', ventas: 'venta', traslados: 'traslado' }[props.tipo]
 const estados = { ingresos: ['registrado', 'anulado'], ventas: ['emitida', 'anulado'], traslados: ['enviado', 'confirmado', 'anulado'] }[props.tipo]
 const filtros = reactive({ sucursal_id: session.usuario.sucursal_id, estado: '' })
@@ -18,8 +20,8 @@ const sucursales = ref([]), documentos = ref([]), movimientos = ref([])
 const cargando = ref(false), error = ref(''), errorSucursales = ref(''), errorForm = ref(''), errorAccion = ref('')
 const formulario = ref(false), guardando = ref(false), accionando = ref(false), incierto = ref(false), kardex = ref(false), seleccionado = ref(null)
 let consulta = 0, detalleConsulta = 0, activo = true, datosPendientes = null
-const puedeConfirmar = computed(() => props.tipo === 'traslados' && seleccionado.value?.estado === 'enviado' && (esSuper() || seleccionado.value.destino_id === session.usuario.sucursal_id))
-const puedeAnular = computed(() => seleccionado.value && seleccionado.value.estado === (props.tipo === 'ingresos' ? 'registrado' : props.tipo === 'ventas' ? 'emitida' : 'enviado') && (esSuper() || props.tipo === 'traslados' && seleccionado.value.origen_id === session.usuario.sucursal_id))
+const puedeConfirmar = computed(() => props.tipo === 'traslados' && seleccionado.value?.estado === 'enviado' && seleccionado.value.destino_id === session.usuario.sucursal_id)
+const puedeAnular = computed(() => seleccionado.value && seleccionado.value.estado === (props.tipo === 'ingresos' ? 'registrado' : props.tipo === 'ventas' ? 'emitida' : 'enviado') && (props.tipo === 'traslados' ? seleccionado.value.origen_id === session.usuario.sucursal_id : esSuper()))
 
 async function cargarSucursales() {
   errorSucursales.value = ''
@@ -79,6 +81,8 @@ async function finalizar(accion) {
   finally { if (activo) accionando.value = false }
 }
 function imprimir() { window.print() }
+watch(() => props.documentoInicial, d => { if (d) { seleccionado.value = d; cargar() } }, { immediate: true })
+watch(seleccionado, d => { if (!d) emit('detalle-cerrado') })
 watch([() => filtros.sucursal_id, () => filtros.estado, kardex], cargar)
 onMounted(() => { cargarSucursales(); cargar() })
 onUnmounted(() => { activo = false; datosPendientes = null })
@@ -105,7 +109,7 @@ onUnmounted(() => { activo = false; datosPendientes = null })
       <OperacionesTable v-if="documentos.length" :documentos="documentos" :tipo="tipo" @ver="ver" />
       <p v-else class="card muted">No hay {{ tipo }} para estos filtros.</p>
     </template>
-    <Teleport to="body"><button class="fab" :disabled="guardando" @click="abrir"><span class="icon">add</span>{{ tipo === 'ingresos' ? 'Registrar ingreso' : tipo === 'ventas' ? 'Nueva venta' : 'Nuevo traslado' }}</button></Teleport>
+    <Teleport v-if="!soloConsulta" to="body"><button class="fab" :disabled="guardando" @click="abrir"><span class="icon">add</span>{{ tipo === 'ingresos' ? 'Registrar ingreso' : tipo === 'ventas' ? 'Nueva venta' : 'Nuevo traslado' }}</button></Teleport>
     <OperacionForm v-if="formulario" :tipo="tipo" :guardando="guardando" :incierto="incierto" :error="errorForm" @guardar="guardar" @cerrar="cerrarForm" />
     <Dialog v-if="seleccionado" :titulo="`${singular.charAt(0).toUpperCase() + singular.slice(1)} #${pad(seleccionado.numero)}`" ancho="lg" @cerrar="!accionando && (seleccionado = null)">
       <article class="comprobante stack">
@@ -120,6 +124,7 @@ onUnmounted(() => { activo = false; datosPendientes = null })
         <p v-if="tipo === 'ventas'">Efectivo: {{ Q(seleccionado.efectivo_centavos / 100) }} · Cambio: {{ Q(seleccionado.cambio_centavos / 100) }}</p>
         <p v-if="seleccionado.estado === 'anulado'">Anulado por {{ seleccionado.anulado_por }} · {{ fecha(seleccionado.anulado_at) }}<br />{{ seleccionado.motivo_anulacion }}</p>
         <p v-if="seleccionado.estado === 'confirmado'">Recibido por {{ seleccionado.confirmado_por }} · {{ fecha(seleccionado.confirmado_at) }}<br />{{ seleccionado.observacion }}</p>
+        <ComprobantePrueba v-if="tipo !== 'traslados'" :key="seleccionado._id" :tipo="tipo" :documento="seleccionado" @actualizar="ver(seleccionado._id)" />
       </article>
       <p v-if="errorAccion" class="form-error" role="alert">{{ errorAccion }}</p>
       <template #acciones><button class="btn text" :disabled="accionando" @click="seleccionado = null">Cerrar</button><button class="btn text" :disabled="accionando" @click="imprimir">Imprimir comprobante</button><button v-if="puedeAnular" class="btn danger" :disabled="accionando" @click="finalizar('anular')">Anular documento</button><button v-if="puedeConfirmar" class="btn" :disabled="accionando" @click="finalizar('confirmar')">Confirmar recepción</button></template>

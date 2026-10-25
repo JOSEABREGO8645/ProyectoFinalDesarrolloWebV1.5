@@ -27,7 +27,7 @@ async function cargarCatalogos() {
 const { registros, cargando, error, filtros, hayFiltros, mostrarFormulario, seleccionado,
   guardando, errorForm, cargar, abrir, cerrar, guardar, eliminar } = useCatalogo({
   obtener: obtenerProductos, agregar: agregarProducto, editar: editarProducto, eliminar: eliminarProducto
-}, 'producto', { proveedor_id: '', sucursal_id: '', categoria: '' })
+}, 'producto', { proveedor_id: '', sucursal_id: session.usuario.sucursal_id, categoria: '' })
 onMounted(cargarCatalogos)
 </script>
 <template>

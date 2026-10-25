@@ -1,4 +1,6 @@
 import axios from 'axios'
+import { ref } from 'vue'
+export const mutacionesEnCurso = ref(0)
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
@@ -12,6 +14,7 @@ const renovacion = axios.create({
   headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
 })
 let accessToken = null
+let sucursalActiva = null
 let epoca = 0
 let renovando = null
 let alCambiar = () => {}
@@ -20,9 +23,12 @@ export function observarSesion(callback) { alCambiar = callback }
 export function descartarSesion() {
   epoca++
   accessToken = null
+  sucursalActiva = null
   alCambiar(null)
 }
 export function aceptarSesion(datos) {
+  if (sucursalActiva && sucursalActiva !== datos.usuario.sucursal_id) epoca++
+  sucursalActiva = datos.usuario.sucursal_id
   accessToken = datos.access_token
   alCambiar(datos)
 }
@@ -50,13 +56,28 @@ export async function renovarAccessToken() {
 }
 
 api.interceptors.request.use(config => {
+  if (!/\/auth\/(login|refresh|logout)$/.test(config.url)) {
+    if (config.sucursalEnviada === undefined) config.sucursalEnviada = sucursalActiva
+    if (config.sucursalEnviada) config.headers.set('X-Sucursal-Id', config.sucursalEnviada)
+  }
+  if (['post', 'put', 'patch', 'delete'].includes(config.method) && !config.url.includes('/auth/')) {
+    config.mutacionContada = true; mutacionesEnCurso.value++
+  }
   config.epocaSesion = epoca
   config.tokenEnviado = accessToken
   if (accessToken) config.headers.set('Authorization', `Bearer ${accessToken}`)
   else config.headers.delete('Authorization')
   return config
 })
-api.interceptors.response.use(respuesta => respuesta, async error => {
+function liberarMutacion(config) {
+  if (config?.mutacionContada) { config.mutacionContada = false; mutacionesEnCurso.value-- }
+}
+api.interceptors.response.use(respuesta => { liberarMutacion(respuesta.config); return respuesta }, async error => {
+  liberarMutacion(error.config)
+  if (error.response?.data?.code === 'SUCURSAL_CAMBIADA') {
+    await renovarAccessToken().catch(() => {})
+    throw error
+  }
   const config = error.config
   if (error.response?.status !== 401 || !config || config.omitirRenovacion || /\/auth\/(login|refresh|logout)$/.test(config.url)) throw error
   if (config.epocaSesion !== epoca) throw error

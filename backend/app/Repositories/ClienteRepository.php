@@ -17,6 +17,9 @@ class ClienteRepository
     public function filtrar(array $filtros): Collection
     {
         $consulta = Cliente::query();
+        if (isset($filtros['nit']) && trim($filtros['nit']) !== '') {
+            $consulta->where('nit', mb_strtoupper(preg_replace('/[-\\s]+/u', '', $filtros['nit'])));
+        }
         $texto = trim($filtros['q'] ?? '');
         if ($texto !== '') {
             $regex = new Regex(preg_quote($texto), 'i');

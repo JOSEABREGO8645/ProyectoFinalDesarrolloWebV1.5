@@ -12,6 +12,9 @@ class ProductoRepository
     public function filtrar(array $filtros): Collection
     {
         $consulta = Producto::query();
+        if (isset($filtros['codigo']) && $filtros['codigo'] !== '') {
+            $consulta->where('codigo', 'regex', new Regex('^'.preg_quote(trim($filtros['codigo']), '/').'$', 'i'));
+        }
         $texto = trim($filtros['q'] ?? '');
         if ($texto !== '') {
             $regex = new Regex(preg_quote($texto), 'i');

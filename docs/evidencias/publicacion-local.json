@@ -1,0 +1,141 @@
+{
+  "alcance": "Imagen Linux local, datos ficticios, HTTP loopback; no verifica el HTTPS público de Render/Atlas.",
+  "casos": [
+    {
+      "caso": "Vue compilado en /",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "API sin sesión devuelve 401 JSON",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Login contra MongoDB desde Linux",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Cookie de publicación Secure y HttpOnly",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "/api/auth/me",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "/api/dashboard",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "/api/productos",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "/api/ingresos",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "/api/ventas",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "/api/traslados",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "ID inexistente",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Validación sin escribir inventario",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Reporte existencias",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Reporte valoracion",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Reporte kardex",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Reporte ventas-diarias",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Reporte productos-vendidos",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Reporte ventas-clientes",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Reporte ingresos-proveedores",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Reporte flujo-traslados",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Reporte anulaciones",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Acceso inválido",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Acceso inválido",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Acceso inválido",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Acceso inválido",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Acceso inválido",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Límite de acceso",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Sesión conservada tras reinicio",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Límite conservado tras reinicio",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Renovación conservada tras reinicio",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Cerrar sesión",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Renovación revocada",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Colección Postman de demostración en Linux",
+      "resultado": "correcto"
+    },
+    {
+      "caso": "Navegador con Vue compilado y renovación",
+      "resultado": "correcto"
+    }
+  ]
+}

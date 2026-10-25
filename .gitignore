@@ -10,3 +10,5 @@ pie.phar
 Thumbs.db
 .DS_Store
 frontend/test-results/
+__pycache__/
+*.py[cod]

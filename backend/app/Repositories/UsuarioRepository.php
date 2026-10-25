@@ -88,7 +88,8 @@ class UsuarioRepository
     {
         foreach (['ventas', 'traslados', 'ingresos', 'movimientos'] as $coleccion) {
             if (DB::connection('mongodb')->table($coleccion)->where(fn ($q) => $q->where('usuario_id', $id)
-                ->orWhere('anulado_por_id', $id)->orWhere('confirmado_por_id', $id))->exists()) {
+                ->orWhere('anulado_por_id', $id)->orWhere('confirmado_por_id', $id)
+                ->orWhere('integraciones.facturacion.solicitado_por_id', $id)->orWhere('integraciones.pagos.solicitado_por_id', $id))->exists()) {
                 return true;
             }
         }

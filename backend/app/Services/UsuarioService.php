@@ -24,6 +24,8 @@ class UsuarioService
 
         return $this->repository->filtrar($filtros)->map(fn (Usuario $usuario) => array_merge($usuario->toArray(), [
             'sucursal_nombre' => $sucursales[$usuario->sucursal_id] ?? null,
+            'sucursal_ids' => $usuario->sucursalesAsignadas(),
+            'sucursal_nombres' => array_values(array_filter(array_map(fn ($id) => $sucursales[$id] ?? null, $usuario->sucursalesAsignadas()))),
             'tiene_codigo' => (bool) $usuario->codigo_hash,
         ]))->all();
     }
@@ -34,6 +36,7 @@ class UsuarioService
 
         return array_merge($usuario->toArray(), [
             'sucursal_nombre' => $this->sucursales->buscarPorId($usuario->sucursal_id)->nombre,
+            'sucursal_ids' => $usuario->sucursalesAsignadas(),
             'tiene_codigo' => (bool) $usuario->codigo_hash,
         ]);
     }
@@ -55,6 +58,7 @@ class UsuarioService
         }
         $this->validar($datos, $id);
         $revocar = isset($datos['password']);
+        $revocar = $revocar || $actual->sucursalesAsignadas() !== $datos['sucursal_ids'];
         foreach (['rol', 'activo', 'sucursal_id', 'modulos'] as $campo) {
             $revocar = $revocar || $actual->{$campo} !== $datos[$campo];
         }
@@ -93,12 +97,17 @@ class UsuarioService
         if ($this->repository->existeUsuario($datos['usuario'], $id)) {
             throw new ReglaNegocioException('Ya existe una cuenta con ese usuario.');
         }
-        $sucursal = $this->sucursales->encontrar($datos['sucursal_id']);
-        if ($sucursal === null) {
-            throw new ReglaNegocioException('La sucursal seleccionada no existe.');
+        if (! $datos['sucursal_ids'] || ! in_array($datos['sucursal_id'], $datos['sucursal_ids'], true)) {
+            throw new ReglaNegocioException('La sucursal principal debe estar entre las sucursales asignadas.');
         }
-        if ($datos['activo'] && ! $sucursal->activo) {
-            throw new ReglaNegocioException('Seleccione una sucursal activa para este usuario.');
+        foreach ($datos['sucursal_ids'] as $idSucursal) {
+            $sucursal = $this->sucursales->encontrar($idSucursal);
+            if ($sucursal === null) {
+                throw new ReglaNegocioException('La sucursal seleccionada no existe.');
+            }
+            if ($datos['activo'] && ! $sucursal->activo) {
+                throw new ReglaNegocioException('Seleccione una sucursal activa para este usuario.');
+            }
         }
     }
 
@@ -107,6 +116,7 @@ class UsuarioService
         $datos['nombre'] = trim($datos['nombre']);
         $datos['usuario'] = mb_strtolower(trim($datos['usuario']));
         $datos['sucursal_id'] = mb_strtolower($datos['sucursal_id']);
+        $datos['sucursal_ids'] = array_values(array_unique(array_map('mb_strtolower', $datos['sucursal_ids'] ?? array_unique([...($actual?->sucursalesAsignadas() ?? []), $datos['sucursal_id']]))));
         $datos['activo'] = (bool) ($datos['activo'] ?? $actual?->activo ?? true);
         $datos['modulos'] = $datos['rol'] === 'superusuario' ? [] : array_values(array_unique($datos['modulos'] ?? (array) $actual?->modulos));
         if (! empty($datos['password'])) {

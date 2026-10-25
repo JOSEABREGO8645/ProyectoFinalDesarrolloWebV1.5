@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogoController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\IntegracionController;
 use App\Http\Controllers\OperacionController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
@@ -46,6 +47,9 @@ Route::prefix('auth')->middleware('origen.sesion')->group(function () {
 });
 
 Route::middleware('auth.jwt')->group(function () {
+    Route::post('/ventas/{id}/factura-prueba', [IntegracionController::class, 'factura'])->middleware(['modulo:ventas', 'throttle:integraciones']);
+    Route::post('/ingresos/{id}/pago-prueba', [IntegracionController::class, 'pago'])->middleware(['modulo:ingresos', 'throttle:integraciones']);
+    Route::get('/integraciones/tipo-cambio', [IntegracionController::class, 'tipoCambio'])->middleware(['modulo:catalogo,ventas,ingresos', 'throttle:integraciones']);
     Route::get('/reportes', [ReporteController::class, 'index'])->middleware('modulo:reportes');
     Route::get('/reportes/productos', [ReporteController::class, 'productos'])->middleware('modulo:reportes');
     Route::get('/reportes/{tipo}', [ReporteController::class, 'show'])->middleware('modulo:reportes');
@@ -60,6 +64,7 @@ Route::middleware('auth.jwt')->group(function () {
     Route::post('/traslados/{id}/confirmar', [OperacionController::class, 'finalizar'])->defaults('tipo', 'traslados')->defaults('accion', 'confirmar')->middleware('modulo:traslados');
     Route::get('/inventario/movimientos', [OperacionController::class, 'kardex'])->middleware('modulo:catalogo,ingresos,ventas,traslados,reportes');
     Route::get('/auth/me', [AuthController::class, 'me']);
+    Route::post('/auth/sucursal', [AuthController::class, 'cambiarSucursal'])->middleware('throttle:auth-refresh');
     Route::post('/auth/verificar-codigo', [AuthController::class, 'verificarCodigo'])->middleware(['modulo:ventas', 'throttle:codigo']);
 
     Route::get('/catalogos/sucursales', [CatalogoController::class, 'sucursales'])->middleware('modulo:catalogo,sucursales,usuarios,ventas,traslados,ingresos,reportes');

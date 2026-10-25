@@ -10,7 +10,7 @@ class Sesion extends Model
 
     protected $table = 'auth_sessions';
 
-    protected $fillable = ['usuario_id', 'auth_version', 'refresh_hash', 'previous_refresh_hash', 'refresh_expires_at', 'revoked_at', 'rotated_at'];
+    protected $fillable = ['usuario_id', 'sucursal_id', 'auth_version', 'refresh_hash', 'previous_refresh_hash', 'refresh_expires_at', 'revoked_at', 'rotated_at'];
 
     protected $hidden = ['refresh_hash', 'previous_refresh_hash'];
 

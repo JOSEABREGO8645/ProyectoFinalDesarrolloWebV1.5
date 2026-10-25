@@ -31,7 +31,7 @@ class CatalogoOperacionService
 
     public function clientes(array $filtros): array
     {
-        return $this->clientes->filtrar(Arr::only($filtros, ['q']))->map(fn ($cliente) => [
+        return $this->clientes->filtrar(Arr::only($filtros, ['q', 'nit']))->map(fn ($cliente) => [
             '_id' => (string) $cliente->getKey(), 'nombre' => $cliente->nombre, 'nit' => $cliente->nit,
         ])->all();
     }

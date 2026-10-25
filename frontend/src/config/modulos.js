@@ -1,6 +1,6 @@
 export const MODULOS = [
-  { id: 'ventas', titulo: 'Ventas', icono: 'point_of_sale' },
   { id: 'inicio', titulo: 'Inicio', icono: 'home', asignable: false },
+  { id: 'ventas', titulo: 'Ventas', icono: 'point_of_sale' },
   { id: 'dashboard', titulo: 'Dashboard', icono: 'dashboard', asignable: false },
   { id: 'sucursales', titulo: 'Sucursales', icono: 'store' },
   { id: 'catalogo', titulo: 'Catálogo', icono: 'menu_book' },

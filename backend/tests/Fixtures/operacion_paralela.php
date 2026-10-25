@@ -16,6 +16,9 @@ if (! app()->environment('testing') || ! preg_match('/^libreria_catalogos_test_[
 config(['database.connections.mongodb.database' => $datos['base']]);
 DB::purge('mongodb');
 $usuario = app(UsuarioRepository::class)->buscarPorId($datos['usuario_id']);
+if (isset($datos['sucursal_activa'])) {
+    $usuario->setAttribute('sucursal_id', $datos['sucursal_activa']);
+}
 while (microtime(true) < $datos['inicio']) {
     usleep(10000);
 }

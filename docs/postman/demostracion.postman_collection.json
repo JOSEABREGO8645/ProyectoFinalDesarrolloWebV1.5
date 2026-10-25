@@ -1,0 +1,962 @@
+{
+  "info": {
+    "name": "Datos persistentes de demostración (solo consulta)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Acceso perfil 0",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/login",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"usuario\":\"{{usuario_0}}\",\"password\":\"{{password_0}}\"}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));",
+              "pm.collectionVariables.set('token',pm.response.json().access_token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contenido /sucursales/buscar",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/sucursales/buscar",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Cantidad inicial 5',()=>pm.expect(pm.response.json().length).eq(5));",
+              "pm.collectionVariables.set('otra_sucursal',pm.response.json().find(s=>s.nombre==='DEMO - Norte')._id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contenido /proveedores",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/proveedores",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Cantidad inicial 5',()=>pm.expect(pm.response.json().length).eq(5));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contenido /clientes",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/clientes",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Cantidad inicial 5',()=>pm.expect(pm.response.json().length).eq(5));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contenido /productos",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/productos",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Cantidad inicial 10',()=>pm.expect(pm.response.json().length).eq(10));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contenido /admin/usuarios",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/admin/usuarios",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Cantidad inicial 5',()=>pm.expect(pm.response.json().length).eq(5));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contenido /ingresos",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/ingresos",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Cantidad inicial 6',()=>pm.expect(pm.response.json().length).eq(6));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contenido /ventas",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/ventas",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Cantidad inicial 6',()=>pm.expect(pm.response.json().length).eq(6));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contenido /traslados",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/traslados",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Cantidad inicial 3',()=>pm.expect(pm.response.json().length).eq(3));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contenido /inventario/movimientos",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/inventario/movimientos",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Cantidad inicial 29',()=>pm.expect(pm.response.json().length).eq(29));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard de demostración",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/dashboard",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Unidades disponibles',()=>pm.expect(pm.response.json().inventario.unidades).eq(123));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reporte existencias",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/existencias",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Contiene resultados',()=>pm.expect(pm.response.json().filas.length).above(0));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reporte valoracion",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/valoracion",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Contiene resultados',()=>pm.expect(pm.response.json().filas.length).above(0));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reporte kardex",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/kardex",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Contiene resultados',()=>pm.expect(pm.response.json().filas.length).above(0));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reporte ventas-diarias",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/ventas-diarias",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Contiene resultados',()=>pm.expect(pm.response.json().filas.length).above(0));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reporte productos-vendidos",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/productos-vendidos",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Contiene resultados',()=>pm.expect(pm.response.json().filas.length).above(0));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reporte ventas-clientes",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/ventas-clientes",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Contiene resultados',()=>pm.expect(pm.response.json().filas.length).above(0));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reporte ingresos-proveedores",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/ingresos-proveedores",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Contiene resultados',()=>pm.expect(pm.response.json().filas.length).above(0));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reporte flujo-traslados",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/flujo-traslados",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Contiene resultados',()=>pm.expect(pm.response.json().filas.length).above(0));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reporte anulaciones",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/anulaciones",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));",
+              "pm.test('Contiene resultados',()=>pm.expect(pm.response.json().filas.length).above(0));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Filtro inválido",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/ventas-diarias?desde=invalido",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 422',()=>pm.response.to.have.status(422));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "ID inexistente",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/productos/ffffffffffffffffffffffff",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 404',()=>pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Salir administrador",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/logout",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Acceso perfil 3",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/login",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"usuario\":\"{{usuario_3}}\",\"password\":\"{{password_3}}\"}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));",
+              "pm.collectionVariables.set('token',pm.response.json().access_token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analista consulta reportes",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analista sin Catálogo",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/productos",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 403',()=>pm.response.to.have.status(403));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analista no consulta otra sucursal",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/reportes/existencias?sucursal_id={{otra_sucursal}}",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 403',()=>pm.response.to.have.status(403));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Salir analista",
+      "request": {
+        "method": "POST",
+        "url": "{{base_url}}/auth/logout",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 200',()=>pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sin sesión",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/dashboard",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Requested-With",
+            "value": "XMLHttpRequest"
+          }
+        ]
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Estado 401',()=>pm.response.to.have.status(401));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

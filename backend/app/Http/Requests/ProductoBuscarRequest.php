@@ -24,6 +24,7 @@ class ProductoBuscarRequest extends FormRequest
     {
         return [
             'q' => ['nullable', 'string', 'max:100'],
+            'codigo' => ['nullable', 'string', 'max:40'],
             'activo' => ['nullable', 'boolean'],
             'categoria' => ['nullable', 'string', 'max:80'],
             'proveedor_id' => ['nullable', 'string', 'regex:/^[a-f0-9]{24}$/i'],

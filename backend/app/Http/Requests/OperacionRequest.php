@@ -49,6 +49,7 @@ class OperacionRequest extends FormRequest
                 'motivo' => ['nullable', 'string', 'max:300'],
                 'cliente_id' => ['nullable', 'string', 'regex:/^[a-f0-9]{24}$/'],
                 'codigo' => ['required', 'string', 'regex:/^[0-9]{4}$/'],
+                'total_esperado_centavos' => ['sometimes', 'integer', 'min:0', 'max:9999999999'],
                 'efectivo' => ['required', 'numeric', 'min:0', 'max:99999999.99', 'decimal:0,2'],
             ],
             'traslados' => ['destino_id' => $id],

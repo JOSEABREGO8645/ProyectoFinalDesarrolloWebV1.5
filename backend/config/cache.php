@@ -34,6 +34,13 @@ return [
 
     'stores' => [
 
+        'mongodb' => [
+            'driver' => 'mongodb',
+            'connection' => 'mongodb',
+            'collection' => 'cache',
+            'lock_collection' => 'cache_locks',
+        ],
+
         'array' => [
             'driver' => 'array',
             'serialize' => false,

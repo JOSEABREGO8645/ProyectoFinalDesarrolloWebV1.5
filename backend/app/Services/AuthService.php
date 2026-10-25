@@ -30,6 +30,7 @@ class AuthService
         $secreto = bin2hex(random_bytes(32));
         $sesion = $this->sesiones->crear([
             'usuario_id' => (string) $usuario->getKey(),
+            'sucursal_id' => $this->sucursalInicial($usuario),
             'auth_version' => (int) $usuario->auth_version,
             'refresh_hash' => hash('sha256', $secreto),
             'refresh_expires_at' => now()->addDays(max(1, (int) config('jwt.refresh_days')))->timestamp,
@@ -81,7 +82,7 @@ class AuthService
             $this->rechazarSesion();
         }
 
-        return ['usuario' => $usuario, 'sesion' => $sesion];
+        return ['usuario' => $this->contextualizar($usuario, $sesion), 'sesion' => $sesion];
     }
 
     public function logout(?string $accessToken, ?string $refreshToken): void
@@ -113,6 +114,9 @@ class AuthService
             'rol' => $usuario->rol,
             'modulos' => $usuario->rol === 'superusuario' ? config('permisos.modulos') : array_values((array) $usuario->modulos),
             'sucursal_id' => $usuario->sucursal_id,
+            'sucursal_principal_id' => $usuario->getRawOriginal('sucursal_id') ?? $usuario->sucursal_id,
+            'sucursal_ids' => $usuario->sucursalesAsignadas(),
+            'sucursales' => array_values(array_filter($this->sucursalesDisponibles($usuario), fn ($s) => $s['activo'])),
             'sucursal_nombre' => $this->sucursales->encontrarActiva($usuario->sucursal_id)?->nombre,
             'tiene_codigo' => (bool) $usuario->codigo_hash,
         ];
@@ -129,7 +133,7 @@ class AuthService
     {
         $sucursales = $usuario->rol === 'superusuario'
             ? $this->sucursales->obtenerTodos()
-            : collect([$this->sucursales->encontrarActiva($usuario->sucursal_id)])->filter();
+            : $this->sucursales->activasPorIds($usuario->sucursalesAsignadas());
 
         return $sucursales->map(fn ($sucursal) => ['_id' => (string) $sucursal->getKey(), 'nombre' => $sucursal->nombre, 'activo' => (bool) $sucursal->activo])->values()->all();
     }
@@ -137,11 +141,13 @@ class AuthService
     private function habilitado(?Usuario $usuario): bool
     {
         return $usuario !== null && $usuario->activo && in_array($usuario->rol, ['empleado', 'superusuario'], true)
-            && $this->sucursales->encontrarActiva((string) $usuario->sucursal_id) !== null;
+            && count(array_filter($this->sucursalesDisponibles($usuario), fn ($s) => $s['activo'])) > 0;
     }
 
     private function respuesta(Usuario $usuario, Sesion $sesion, string $secreto): array
     {
+        $usuario = $this->contextualizar($usuario, $sesion);
+
         return [
             'access_token' => $this->jwt->emitir((string) $usuario->getKey(), (string) $sesion->getKey()),
             'token_type' => 'Bearer', 'expires_in' => $this->jwt->duracion(),
@@ -149,6 +155,42 @@ class AuthService
             'refresh_token' => (string) $sesion->getKey().'.'.$secreto,
             'refresh_expires_in' => max(0, $sesion->refresh_expires_at - now()->timestamp),
         ];
+    }
+
+    public function cambiarSucursal(Usuario $usuario, string $sesionId, string $sucursalId): array
+    {
+        $opciones = array_column(array_filter($this->sucursalesDisponibles($usuario), fn ($s) => $s['activo']), '_id');
+        if (! in_array($sucursalId, $opciones, true)) {
+            throw new ReglaNegocioException('No tiene acceso a esa sucursal o está inactiva.', 403);
+        }
+        if ($sucursalId !== $usuario->sucursal_id && ! $this->sesiones->cambiarSucursal($sesionId, $usuario->sucursal_id, $sucursalId, now()->timestamp)) {
+            throw new ReglaNegocioException('La sesión cambió mientras seleccionaba la sucursal. Actualice e intente de nuevo.', 409);
+        }
+        $usuario->setAttribute('sucursal_id', $sucursalId);
+
+        return ['access_token' => $this->jwt->emitir((string) $usuario->getKey(), $sesionId),
+            'token_type' => 'Bearer', 'expires_in' => $this->jwt->duracion(), 'usuario' => $this->perfil($usuario)];
+    }
+
+    private function sucursalInicial(Usuario $usuario): string
+    {
+        $activas = array_values(array_filter($this->sucursalesDisponibles($usuario), fn ($s) => $s['activo']));
+        $ids = array_column($activas, '_id');
+
+        return in_array($usuario->sucursal_id, $ids, true) ? $usuario->sucursal_id : $ids[0];
+    }
+
+    private function contextualizar(Usuario $usuario, Sesion $sesion): Usuario
+    {
+        $id = $sesion->sucursal_id ?? $usuario->sucursal_id;
+        $ids = array_column(array_filter($this->sucursalesDisponibles($usuario), fn ($s) => $s['activo']), '_id');
+        if (! in_array($id, $ids, true)) {
+            $this->sesiones->revocar((string) $sesion->getKey(), now()->timestamp);
+            $this->rechazarSesion();
+        }
+        $usuario->setAttribute('sucursal_id', $id);
+
+        return $usuario;
     }
 
     private function separarRefresh(?string $token): array

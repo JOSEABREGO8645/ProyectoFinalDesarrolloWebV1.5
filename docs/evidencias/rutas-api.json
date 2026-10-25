@@ -1,0 +1,708 @@
+[
+  {
+    "method": "GET|HEAD",
+    "uri": "api/admin/usuarios",
+    "name": null,
+    "action": "App\\Http\\Controllers\\UsuarioController@index",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:usuarios"
+    ]
+  },
+  {
+    "method": "POST",
+    "uri": "api/admin/usuarios",
+    "name": null,
+    "action": "App\\Http\\Controllers\\UsuarioController@store",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:usuarios"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/admin/usuarios/buscar",
+    "name": null,
+    "action": "App\\Http\\Controllers\\UsuarioController@buscar",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:usuarios"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/admin/usuarios/{id}",
+    "name": null,
+    "action": "App\\Http\\Controllers\\UsuarioController@show",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:usuarios"
+    ]
+  },
+  {
+    "method": "PUT",
+    "uri": "api/admin/usuarios/{id}",
+    "name": null,
+    "action": "App\\Http\\Controllers\\UsuarioController@update",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:usuarios"
+    ]
+  },
+  {
+    "method": "DELETE",
+    "uri": "api/admin/usuarios/{id}",
+    "name": null,
+    "action": "App\\Http\\Controllers\\UsuarioController@destroy",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:usuarios"
+    ]
+  },
+  {
+    "method": "POST",
+    "uri": "api/auth/login",
+    "name": null,
+    "action": "App\\Http\\Controllers\\AuthController@login",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\OrigenSesion",
+      "Illuminate\\Routing\\Middleware\\ThrottleRequests:auth-login"
+    ]
+  },
+  {
+    "method": "POST",
+    "uri": "api/auth/logout",
+    "name": null,
+    "action": "App\\Http\\Controllers\\AuthController@logout",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\OrigenSesion",
+      "Illuminate\\Routing\\Middleware\\ThrottleRequests:auth-refresh"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/auth/me",
+    "name": null,
+    "action": "App\\Http\\Controllers\\AuthController@me",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt"
+    ]
+  },
+  {
+    "method": "POST",
+    "uri": "api/auth/refresh",
+    "name": null,
+    "action": "App\\Http\\Controllers\\AuthController@refresh",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\OrigenSesion",
+      "Illuminate\\Routing\\Middleware\\ThrottleRequests:auth-refresh"
+    ]
+  },
+  {
+    "method": "POST",
+    "uri": "api/auth/sucursal",
+    "name": null,
+    "action": "App\\Http\\Controllers\\AuthController@cambiarSucursal",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "Illuminate\\Routing\\Middleware\\ThrottleRequests:auth-refresh"
+    ]
+  },
+  {
+    "method": "POST",
+    "uri": "api/auth/verificar-codigo",
+    "name": null,
+    "action": "App\\Http\\Controllers\\AuthController@verificarCodigo",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:ventas",
+      "Illuminate\\Routing\\Middleware\\ThrottleRequests:codigo"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/catalogos/clientes",
+    "name": null,
+    "action": "App\\Http\\Controllers\\CatalogoController@clientes",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:clientes,ventas,reportes"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/catalogos/destinos",
+    "name": null,
+    "action": "App\\Http\\Controllers\\CatalogoController@destinos",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:traslados"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/catalogos/productos",
+    "name": null,
+    "action": "App\\Http\\Controllers\\CatalogoController@productos",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:catalogo,ventas,traslados,ingresos,reportes"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/catalogos/proveedores",
+    "name": null,
+    "action": "App\\Http\\Controllers\\CatalogoController@proveedores",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:catalogo,proveedores,ingresos,reportes"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/catalogos/sucursales",
+    "name": null,
+    "action": "App\\Http\\Controllers\\CatalogoController@sucursales",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:catalogo,sucursales,usuarios,ventas,traslados,ingresos,reportes"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/clientes",
+    "name": null,
+    "action": "App\\Http\\Controllers\\ClienteController@index",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:clientes"
+    ]
+  },
+  {
+    "method": "POST",
+    "uri": "api/clientes",
+    "name": null,
+    "action": "App\\Http\\Controllers\\ClienteController@store",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:clientes"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/clientes/buscar",
+    "name": null,
+    "action": "App\\Http\\Controllers\\ClienteController@buscar",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:clientes"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/clientes/por-nit/{nit}",
+    "name": null,
+    "action": "App\\Http\\Controllers\\ClienteController@porNit",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:clientes"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/clientes/{id}",
+    "name": null,
+    "action": "App\\Http\\Controllers\\ClienteController@show",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:clientes"
+    ]
+  },
+  {
+    "method": "PUT",
+    "uri": "api/clientes/{id}",
+    "name": null,
+    "action": "App\\Http\\Controllers\\ClienteController@update",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:clientes"
+    ]
+  },
+  {
+    "method": "DELETE",
+    "uri": "api/clientes/{id}",
+    "name": null,
+    "action": "App\\Http\\Controllers\\ClienteController@destroy",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:clientes"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/dashboard",
+    "name": null,
+    "action": "App\\Http\\Controllers\\DashboardController@index",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:catalogo,ventas,ingresos,traslados"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/ingresos",
+    "name": null,
+    "action": "App\\Http\\Controllers\\OperacionController@index",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:ingresos"
+    ]
+  },
+  {
+    "method": "POST",
+    "uri": "api/ingresos",
+    "name": null,
+    "action": "App\\Http\\Controllers\\OperacionController@store",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:ingresos"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/ingresos/{id}",
+    "name": null,
+    "action": "App\\Http\\Controllers\\OperacionController@show",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:ingresos"
+    ]
+  },
+  {
+    "method": "POST",
+    "uri": "api/ingresos/{id}/anular",
+    "name": null,
+    "action": "App\\Http\\Controllers\\OperacionController@finalizar",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:ingresos"
+    ]
+  },
+  {
+    "method": "POST",
+    "uri": "api/ingresos/{id}/pago-prueba",
+    "name": null,
+    "action": "App\\Http\\Controllers\\IntegracionController@pago",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:ingresos",
+      "Illuminate\\Routing\\Middleware\\ThrottleRequests:integraciones"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/integraciones/tipo-cambio",
+    "name": null,
+    "action": "App\\Http\\Controllers\\IntegracionController@tipoCambio",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:catalogo,ventas,ingresos",
+      "Illuminate\\Routing\\Middleware\\ThrottleRequests:integraciones"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/inventario/movimientos",
+    "name": null,
+    "action": "App\\Http\\Controllers\\OperacionController@kardex",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:catalogo,ingresos,ventas,traslados,reportes"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/ping",
+    "name": null,
+    "action": "Closure",
+    "middleware": [
+      "api"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/productos",
+    "name": null,
+    "action": "App\\Http\\Controllers\\ProductoController@index",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:catalogo"
+    ]
+  },
+  {
+    "method": "POST",
+    "uri": "api/productos",
+    "name": null,
+    "action": "App\\Http\\Controllers\\ProductoController@store",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:catalogo"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/productos/buscar",
+    "name": null,
+    "action": "App\\Http\\Controllers\\ProductoController@buscar",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:catalogo"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/productos/{id}",
+    "name": null,
+    "action": "App\\Http\\Controllers\\ProductoController@show",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:catalogo"
+    ]
+  },
+  {
+    "method": "PUT",
+    "uri": "api/productos/{id}",
+    "name": null,
+    "action": "App\\Http\\Controllers\\ProductoController@update",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:catalogo"
+    ]
+  },
+  {
+    "method": "DELETE",
+    "uri": "api/productos/{id}",
+    "name": null,
+    "action": "App\\Http\\Controllers\\ProductoController@destroy",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:catalogo"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/proveedores",
+    "name": null,
+    "action": "App\\Http\\Controllers\\ProveedorController@index",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:proveedores"
+    ]
+  },
+  {
+    "method": "POST",
+    "uri": "api/proveedores",
+    "name": null,
+    "action": "App\\Http\\Controllers\\ProveedorController@store",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:proveedores"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/proveedores/buscar",
+    "name": null,
+    "action": "App\\Http\\Controllers\\ProveedorController@buscar",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:proveedores"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/proveedores/{id}",
+    "name": null,
+    "action": "App\\Http\\Controllers\\ProveedorController@show",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:proveedores"
+    ]
+  },
+  {
+    "method": "PUT",
+    "uri": "api/proveedores/{id}",
+    "name": null,
+    "action": "App\\Http\\Controllers\\ProveedorController@update",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:proveedores"
+    ]
+  },
+  {
+    "method": "DELETE",
+    "uri": "api/proveedores/{id}",
+    "name": null,
+    "action": "App\\Http\\Controllers\\ProveedorController@destroy",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:proveedores"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/reportes",
+    "name": null,
+    "action": "App\\Http\\Controllers\\ReporteController@index",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:reportes"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/reportes/productos",
+    "name": null,
+    "action": "App\\Http\\Controllers\\ReporteController@productos",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:reportes"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/reportes/{tipo}",
+    "name": null,
+    "action": "App\\Http\\Controllers\\ReporteController@show",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:reportes"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/sucursales",
+    "name": null,
+    "action": "App\\Http\\Controllers\\SucursalController@index",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:sucursales"
+    ]
+  },
+  {
+    "method": "POST",
+    "uri": "api/sucursales",
+    "name": null,
+    "action": "App\\Http\\Controllers\\SucursalController@store",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:sucursales"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/sucursales/buscar",
+    "name": null,
+    "action": "App\\Http\\Controllers\\SucursalController@buscar",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:sucursales"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/sucursales/{id}",
+    "name": null,
+    "action": "App\\Http\\Controllers\\SucursalController@show",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:sucursales"
+    ]
+  },
+  {
+    "method": "PUT",
+    "uri": "api/sucursales/{id}",
+    "name": null,
+    "action": "App\\Http\\Controllers\\SucursalController@update",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:sucursales"
+    ]
+  },
+  {
+    "method": "DELETE",
+    "uri": "api/sucursales/{id}",
+    "name": null,
+    "action": "App\\Http\\Controllers\\SucursalController@destroy",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:sucursales"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/traslados",
+    "name": null,
+    "action": "App\\Http\\Controllers\\OperacionController@index",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:traslados"
+    ]
+  },
+  {
+    "method": "POST",
+    "uri": "api/traslados",
+    "name": null,
+    "action": "App\\Http\\Controllers\\OperacionController@store",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:traslados"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/traslados/{id}",
+    "name": null,
+    "action": "App\\Http\\Controllers\\OperacionController@show",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:traslados"
+    ]
+  },
+  {
+    "method": "POST",
+    "uri": "api/traslados/{id}/anular",
+    "name": null,
+    "action": "App\\Http\\Controllers\\OperacionController@finalizar",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:traslados"
+    ]
+  },
+  {
+    "method": "POST",
+    "uri": "api/traslados/{id}/confirmar",
+    "name": null,
+    "action": "App\\Http\\Controllers\\OperacionController@finalizar",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:traslados"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/ventas",
+    "name": null,
+    "action": "App\\Http\\Controllers\\OperacionController@index",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:ventas"
+    ]
+  },
+  {
+    "method": "POST",
+    "uri": "api/ventas",
+    "name": null,
+    "action": "App\\Http\\Controllers\\OperacionController@store",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:ventas",
+      "Illuminate\\Routing\\Middleware\\ThrottleRequests:codigo"
+    ]
+  },
+  {
+    "method": "GET|HEAD",
+    "uri": "api/ventas/{id}",
+    "name": null,
+    "action": "App\\Http\\Controllers\\OperacionController@show",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:ventas"
+    ]
+  },
+  {
+    "method": "POST",
+    "uri": "api/ventas/{id}/anular",
+    "name": null,
+    "action": "App\\Http\\Controllers\\OperacionController@finalizar",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:ventas"
+    ]
+  },
+  {
+    "method": "POST",
+    "uri": "api/ventas/{id}/factura-prueba",
+    "name": null,
+    "action": "App\\Http\\Controllers\\IntegracionController@factura",
+    "middleware": [
+      "api",
+      "App\\Http\\Middleware\\AutenticarJwt",
+      "App\\Http\\Middleware\\Modulo:ventas",
+      "Illuminate\\Routing\\Middleware\\ThrottleRequests:integraciones"
+    ]
+  }
+]

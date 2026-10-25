@@ -12,7 +12,8 @@ import ReportesView from './views/ReportesView.vue'
 import IngresosView from './views/IngresosView.vue'
 import VentasView from './views/VentasView.vue'
 import TrasladosView from './views/TrasladosView.vue'
-import { session, inicializarSesion, cerrarSesion, puede } from './stores/session'
+import { session, inicializarSesion, cerrarSesion, puede, cambiarSucursal } from './stores/session'
+import { mutacionesEnCurso } from './services/api'
 import { mensajeError } from './services/api'
 import { MODULOS } from './config/modulos'
 import ToastHost from './components/comunes/ToastHost.vue'
@@ -21,6 +22,11 @@ import { ui, alternarTema, notificar } from './stores/ui'
 
 const vistas = { inicio: InicioView, dashboard: DashboardView, reportes: ReportesView, sucursales: SucursalesView, proveedores: ProveedoresView, clientes: ClientesView, catalogo: CatalogoView, usuarios: UsuariosView, ingresos: IngresosView, ventas: VentasView, traslados: TrasladosView }
 const leerModulo = () => window.location.hash.slice(1)
+const esDemo = import.meta.env.VITE_DEMO === 'true'
+async function elegirSucursal(evento) {
+  try { await cambiarSucursal(evento.target.value) } catch (e) { notificar(mensajeError(e), 'error') }
+  finally { evento.target.value = session.usuario?.sucursal_id || '' }
+}
 const actual = ref(leerModulo())
 const navegar = () => { actual.value = leerModulo() }
 watch(() => session.usuario?._id, navegar, { flush: 'sync' })
@@ -35,6 +41,7 @@ onMounted(inicializarSesion)
 </script>
 
 <template>
+  <p v-if="esDemo" class="demo-banner" role="status">Modo demostración · Datos ficticios</p>
   <div v-if="!session.listo" class="boot-session">
     <div v-if="!session.error" class="spinner" aria-label="Comprobando sesión" />
     <template v-else><p class="form-error" role="alert">{{ session.error }}</p><button class="btn" @click="inicializarSesion">Reintentar conexión</button></template>
@@ -51,14 +58,15 @@ onMounted(inicializarSesion)
     <main class="main">
       <header class="topbar">
         <h1 class="headline grow">{{ modulo?.titulo || 'Mi cuenta' }}</h1>
-        <div class="session-meta"><strong>{{ session.usuario.nombre }}</strong><small>{{ session.usuario.sucursal_nombre }}</small></div>
+        <div class="session-meta"><strong>{{ session.usuario.nombre }}</strong><select v-if="session.usuario.sucursales?.length > 1" :value="session.usuario.sucursal_id" aria-label="Sucursal activa" :disabled="session.cambiandoSucursal || !!mutacionesEnCurso" @change="elegirSucursal"><option v-for="s in session.usuario.sucursales" :key="s._id" :value="s._id">{{ s.nombre }}</option></select><small v-else>{{ session.usuario.sucursal_nombre }}</small></div>
         <a class="icon-btn" href="#inicio" aria-label="Ir al inicio" title="Inicio"><span class="icon">home</span></a>
         <button class="icon-btn" title="Cambiar tema" @click="alternarTema">
           <span class="icon">{{ ui.tema === 'dark' ? 'light_mode' : 'dark_mode' }}</span>
         </button>
         <button class="icon-btn" aria-label="Cerrar sesión" title="Cerrar sesión" :disabled="session.cerrando" @click="salir"><span class="icon">logout</span></button>
       </header>
-      <component v-if="modulo && puede(modulo.id)" :is="vistas[modulo.id]" :key="`${session.usuario._id}:${modulo.id}`" class="page" />
+      <div v-if="session.cambiandoSucursal" class="cambio-sucursal" role="status"><div class="spinner" />Cambiando de sucursal…</div>
+      <component v-if="modulo && puede(modulo.id)" :is="vistas[modulo.id]" :key="`${session.usuario._id}:${session.usuario.sucursal_id}:${modulo.id}`" class="page" :inert="session.cambiandoSucursal || undefined" />
       <div v-else class="card stack" role="alert"><p>{{ disponibles.length ? 'No tiene permiso para este módulo.' : 'No tiene módulos asignados. Solicite acceso al administrador.' }}</p><a v-if="disponibles.length" class="btn" :href="`#${disponibles[0].id}`">Ir a {{ disponibles[0].titulo }}</a></div>
     </main>
   </div>

@@ -1,8 +1,8 @@
 import { reactive } from 'vue'
-import api, { aceptarSesion, descartarSesion, observarSesion, renovarAccessToken, mensajeError } from '../services/api'
+import api, { aceptarSesion, descartarSesion, observarSesion, renovarAccessToken, mensajeError, mutacionesEnCurso } from '../services/api'
 import { notificar, ui } from './ui'
 
-export const session = reactive({ usuario: null, listo: false, error: '', cerrando: false })
+export const session = reactive({ usuario: null, listo: false, error: '', cerrando: false, cambiandoSucursal: false })
 export const esSuper = () => session.usuario?.rol === 'superusuario'
 export const puede = modulo => !!session.usuario && (modulo === 'inicio' ? true : modulo === 'dashboard'
   ? ['catalogo', 'ventas', 'ingresos', 'traslados'].some(puede)
@@ -12,6 +12,9 @@ let temporizador
 observarSesion(datos => {
   clearTimeout(temporizador)
   const teniaSesion = !!session.usuario
+  if (session.usuario?.sucursal_id && datos?.usuario && session.usuario.sucursal_id !== datos.usuario.sucursal_id && ui.confirm) {
+    ui.confirm.resolver(false); ui.confirm = null
+  }
   session.usuario = datos?.usuario ?? null
   if (datos) {
     session.listo = true
@@ -51,4 +54,18 @@ export async function cerrarSesion() {
   } finally {
     session.cerrando = false
   }
+}
+
+export async function cambiarSucursal(id) {
+  if (session.cambiandoSucursal || mutacionesEnCurso.value || id === session.usuario?.sucursal_id) return
+  session.cambiandoSucursal = true
+  try {
+    const { data } = await api.post('/auth/sucursal', { sucursal_id: id })
+    if (ui.confirm) { ui.confirm.resolver(false); ui.confirm = null }
+    aceptarSesion(data)
+    notificar('Sucursal activa: ' + data.usuario.sucursal_nombre, 'ok')
+  } catch (e) {
+    await renovarAccessToken().catch(() => {})
+    throw e
+  } finally { session.cambiandoSucursal = false }
 }

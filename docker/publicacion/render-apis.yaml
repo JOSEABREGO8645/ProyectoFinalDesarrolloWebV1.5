@@ -1,0 +1,47 @@
+services:
+  - type: web
+    name: libreria-facturacion-demo
+    runtime: node
+    plan: free
+    rootDir: docker/apis
+    buildCommand: npm ci --ignore-scripts --no-audit --no-fund
+    startCommand: node simulador.mjs
+    healthCheckPath: /salud
+    envVars:
+      - key: NODE_VERSION
+        value: "24.19.0"
+      - key: NODE_ENV
+        value: production
+      - key: API_HOST
+        value: "0.0.0.0"
+      - key: API_TIPO
+        value: facturacion
+      - key: API_MONGO_DATABASE
+        value: libreria_facturacion_demo
+      - key: API_MONGO_URI
+        sync: false
+      - key: API_TOKEN
+        sync: false
+  - type: web
+    name: libreria-pagos-demo
+    runtime: node
+    plan: free
+    rootDir: docker/apis
+    buildCommand: npm ci --ignore-scripts --no-audit --no-fund
+    startCommand: node simulador.mjs
+    healthCheckPath: /salud
+    envVars:
+      - key: NODE_VERSION
+        value: "24.19.0"
+      - key: NODE_ENV
+        value: production
+      - key: API_HOST
+        value: "0.0.0.0"
+      - key: API_TIPO
+        value: pagos
+      - key: API_MONGO_DATABASE
+        value: libreria_pagos_demo
+      - key: API_MONGO_URI
+        sync: false
+      - key: API_TOKEN
+        sync: false

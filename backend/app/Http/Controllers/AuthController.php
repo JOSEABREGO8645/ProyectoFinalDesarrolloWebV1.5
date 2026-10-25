@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CambiarSucursalRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\VerificarCodigoRequest;
 use App\Services\AuthService;
@@ -26,6 +27,11 @@ class AuthController extends Controller
     public function me(Request $request): JsonResponse
     {
         return response()->json($this->service->perfil($request->user()));
+    }
+
+    public function cambiarSucursal(CambiarSucursalRequest $request): JsonResponse
+    {
+        return response()->json($this->service->cambiarSucursal($request->user(), $request->attributes->get('auth_session_id'), $request->validated('sucursal_id')));
     }
 
     public function logout(Request $request): JsonResponse
