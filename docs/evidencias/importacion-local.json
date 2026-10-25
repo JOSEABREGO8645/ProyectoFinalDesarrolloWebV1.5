@@ -1,0 +1,35 @@
+{
+  "fecha_local": "2026-10-24",
+  "aplicacion": "https://libreria-san-francisco.onrender.com",
+  "commit_aplicacion": "c548e1c",
+  "origen": "Base local de trabajo",
+  "destino": "Atlas; conserva los registros existentes",
+  "importados_erp": {
+    "sucursales": 2,
+    "proveedores": 1,
+    "clientes": 1,
+    "productos": 31,
+    "usuarios": 1,
+    "ingresos": 1,
+    "ventas": 2,
+    "traslados": 2,
+    "existencias": 33,
+    "movimientos": 43,
+    "contadores": 4
+  },
+  "historial_facturacion_importado": 1,
+  "total_productos_publicados": 41,
+  "total_sucursales_publicadas": 7,
+  "verificaciones": {
+    "respaldo_privado_previo_de_ambos_lados": true,
+    "copia_confirmada_en_transaccion": true,
+    "ids_referencias_y_tipos_bson_conservados": true,
+    "documentos_pendientes_al_repetir_plan": 0,
+    "acceso_https_con_cuenta_local": true,
+    "aviso_demostracion_ausente_en_navegador_publico": true,
+    "acceso_caja_permisos_renovacion_y_salida_publicos": true,
+    "pruebas_importacion": 5,
+    "aserciones_importacion": 21
+  },
+  "alcance": "Copia de datos existentes, sin generar nuevos movimientos para las mismas unidades. Excluye sesiones y cache. No contiene credenciales ni documentos comerciales."
+}
