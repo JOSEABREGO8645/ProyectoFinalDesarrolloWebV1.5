@@ -3,7 +3,7 @@ WORKDIR /app
 COPY frontend/package*.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund
 COPY frontend/ ./
-ENV VITE_API_URL=/api VITE_DEMO=true
+ENV VITE_API_URL=/api VITE_DEMO=false
 RUN npm run build
 
 FROM php:8.5-apache
@@ -14,11 +14,13 @@ RUN docker-php-ext-install -j2 intl mbstring zip
 RUN pecl install mongodb-2.5.3 && docker-php-ext-enable mongodb && a2enmod rewrite headers
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 WORKDIR /var/www/html
+COPY backend/composer.json backend/composer.lock ./
+RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --prefer-dist --no-autoloader --no-interaction --no-progress --no-scripts \
+    && composer check-platform-reqs --no-dev
 COPY backend/ ./
 RUN mkdir -p storage/app/private storage/framework/cache/data storage/framework/sessions \
     storage/framework/views storage/logs bootstrap/cache \
-    && COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction --no-progress --no-scripts \
-    && composer check-platform-reqs --no-dev \
+    && COMPOSER_ALLOW_SUPERUSER=1 composer dump-autoload --no-dev --optimize --no-scripts \
     && chown -R www-data:www-data storage bootstrap/cache
 COPY --from=frontend /app/dist/ ./public/
 COPY docker/publicacion/public.htaccess ./public/.htaccess
